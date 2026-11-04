@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0b0f17">
+<title>Instant Text &amp; Code Transfer</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/vazirmatn@33.0.3/Vazirmatn-font-face.css">
+<style>
+  :root{
+    --bg:#0b0f17; --panel:#121826; --panel2:#182033; --border:#222c42;
+    --text:#e7ecf6; --muted:#8a96b0; --accent:#6c8cff; --accent2:#8b5cf6;
+    --ok:#34d399; --warn:#fbbf24; --err:#f87171;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;background:var(--bg);color:var(--text);
+    font-family:'Vazirmatn',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;line-height:1.7}
+  body{min-height:100vh;background:
+    radial-gradient(900px 500px at 85% -10%,rgba(108,140,255,.12),transparent 60%),
+    radial-gradient(700px 400px at 0% 0%,rgba(139,92,246,.10),transparent 55%),var(--bg);
+    padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom)}
+  .wrap{max-width:760px;margin:0 auto;padding:20px 16px 40px}
+  header{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:16px;flex-wrap:wrap}
+  h1{font-size:1.25rem;margin:0;font-weight:700;display:flex;align-items:center;gap:10px}
+  h1 .logo{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;
+    background:linear-gradient(135deg,var(--accent),var(--accent2));font-size:18px}
+  .status{display:inline-flex;align-items:center;gap:8px;font-size:.8rem;color:var(--muted);
+    background:var(--panel);border:1px solid var(--border);padding:5px 12px;border-radius:999px}
+  .dot{width:8px;height:8px;border-radius:50%;background:var(--warn);box-shadow:0 0 0 3px rgba(251,191,36,.15)}
+  .status.on .dot{background:var(--ok);box-shadow:0 0 0 3px rgba(52,211,153,.15)}
+  .status.off .dot{background:var(--err);box-shadow:0 0 0 3px rgba(248,113,113,.15)}
+  .card{background:var(--panel);border:1px solid var(--border);border-radius:16px;padding:14px;margin-bottom:16px}
+  .room{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+  .room .label{font-size:.82rem;color:var(--muted)}
+  .room code{font-family:ui-monospace,Menlo,Consolas,monospace;background:var(--panel2);
+    border:1px solid var(--border);padding:3px 10px;border-radius:8px;font-size:.9rem;letter-spacing:.5px}
+  .room .spacer{flex:1}
+  button{font-family:inherit;cursor:pointer;border:0;color:var(--text);transition:.15s}
+  .btn{background:var(--panel2);border:1px solid var(--border);padding:7px 13px;border-radius:10px;font-size:.82rem}
+  .btn:hover{border-color:var(--accent);color:#fff}
+  textarea{width:100%;min-height:140px;max-height:50vh;resize:vertical;background:var(--panel2);color:var(--text);
+    border:1px solid var(--border);border-radius:12px;padding:12px 14px;font-family:'Vazirmatn',ui-monospace,Menlo,Consolas,monospace;
+    font-size:.95rem;line-height:1.7;outline:none}
+  textarea:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(108,140,255,.15)}
+  textarea::placeholder{color:#5c6884}
+  .bar{display:flex;align-items:center;gap:10px;margin-top:10px;flex-wrap:wrap}
+  .count{font-size:.78rem;color:var(--muted)}
+  .count.bad{color:var(--err)}
+  .bar .spacer{flex:1}
+  .send{background:linear-gradient(135deg,var(--accent),var(--accent2));padding:10px 30px;border-radius:12px;
+    font-size:1rem;font-weight:700;box-shadow:0 6px 20px rgba(108,140,255,.28)}
+  .send:hover{filter:brightness(1.1)}
+  .send:active{transform:scale(.97)}
+  .send:disabled{opacity:.45;cursor:not-allowed;box-shadow:none;filter:none}
+  .list-head{display:flex;align-items:center;justify-content:space-between;margin:22px 2px 10px}
+  .list-head h2{font-size:1rem;margin:0;color:var(--muted);font-weight:600}
+  .msg{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:12px 14px;margin-bottom:10px;
+    animation:in .25s ease}
+  @keyframes in{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+  .msg .meta{display:flex;align-items:center;gap:8px;font-size:.76rem;color:var(--muted);margin-bottom:8px}
+  .msg .meta .who{color:var(--accent)}
+  .msg .meta .spacer{flex:1}
+  .msg pre{margin:0;white-space:pre-wrap;word-break:break-word;font-family:'Vazirmatn',ui-monospace,Menlo,Consolas,monospace;
+    font-size:.93rem;line-height:1.75;background:var(--panel2);border:1px solid var(--border);border-radius:10px;padding:10px 12px;
+    max-height:360px;overflow:auto;unicode-bidi:plaintext}
+  .copy{background:transparent;border:1px solid var(--border);padding:3px 12px;border-radius:8px;font-size:.76rem;color:var(--text)}
+  .copy:hover{border-color:var(--ok);color:var(--ok)}
+  .empty{text-align:center;color:#55617c;padding:30px 10px;font-size:.9rem}
+  .toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom));transform:translate(-50%,20px);opacity:0;
+    background:#1d2640;border:1px solid var(--border);padding:9px 18px;border-radius:12px;font-size:.88rem;pointer-events:none;
+    transition:.25s;z-index:10}
+  .toast.show{opacity:1;transform:translate(-50%,0)}
+  .join{display:none;margin-top:10px;gap:8px}
+  .join.open{display:flex}
+  .join input{flex:1;background:var(--panel2);border:1px solid var(--border);color:var(--text);
+    border-radius:10px;padding:8px 12px;font-family:ui-monospace,Menlo,Consolas,monospace;outline:none}
+  .join input:focus{border-color:var(--accent)}
+  ::-webkit-scrollbar{width:8px;height:8px}::-webkit-scrollbar-thumb{background:#2a3550;border-radius:8px}
+  @media (max-width:480px){.send{width:100%}.count{order:2}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1><span class="logo">⚡</span> Instant Text &amp; Code Transfer</h1>
+    <div class="status" id="status"><span class="dot"></span><span id="statusText">Connecting…</span></div>
+  </header>
+
+  <section class="card">
+    <div class="room">
+      <span class="label">Room code:</span>
+      <code id="roomCode">—</code>
+      <span class="spacer"></span>
+      <button class="btn" id="copyLink">Copy link</button>
+      <button class="btn" id="joinToggle">Join with code</button>
+      <button class="btn" id="newRoom">New room</button>
+    </div>
+    <div class="join" id="join">
+      <input id="joinInput" placeholder="Enter room code" maxlength="32" autocomplete="off" spellcheck="false">
+      <button class="btn" id="joinGo">Join</button>
+    </div>
+  </section>
+
+  <section class="card">
+    <textarea id="input" placeholder="Type or paste your text or code here, then press Send…" dir="auto" spellcheck="false"></textarea>
+    <div class="bar">
+      <span class="count" id="count">0 / 3800 bytes</span>
+      <span class="spacer"></span>
+      <button class="btn" id="clearInput">Clear</button>
+      <button class="send" id="send" disabled>Send</button>
+    </div>
+  </section>
+
+  <div class="list-head">
+    <h2>Messages</h2>
+    <button class="btn" id="clearList">Clear list</button>
+  </div>
+  <div id="list"></div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+(() => {
+  'use strict';
+  const SERVER = 'https://ntfy.sh';
+  const PREFIX = 'ptx-';
+  const MAX_BYTES = 3800;           // cloud message limit is ~4096 bytes
+  const $ = id => document.getElementById(id);
+  const el = { status:$('status'), statusText:$('statusText'), roomCode:$('roomCode'), input:$('input'),
+    send:$('send'), count:$('count'), list:$('list'), toast:$('toast'), join:$('join'), joinInput:$('joinInput') };
+
+  const store = {
+    get(k){ try{ return localStorage.getItem(k); }catch(e){ return null; } },
+    set(k,v){ try{ localStorage.setItem(k,v); }catch(e){} }
+  };
+  const enc = new TextEncoder();
+  const bytes = s => enc.encode(s).length;
+  const validRoom = r => /^[a-z0-9]{6,32}$/.test(r);
+  const genRoom = () => {
+    const a = new Uint8Array(10); crypto.getRandomValues(a);
+    return Array.from(a, b => 'abcdefghijkmnpqrstuvwxyz23456789'[b % 32]).join('');
+  };
+  const device = /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent) ? '📱 Phone' : '💻 Computer';
+
+  // ---------- Room ----------
+  let room = (location.hash || '').replace('#','').toLowerCase();
+  if (!validRoom(room)) room = store.get('ptx_room') || '';
+  if (!validRoom(room)) room = genRoom();
+  store.set('ptx_room', room);
+  history.replaceState(null, '', '#' + room);
+  el.roomCode.textContent = room;
+
+  let clearedAt = Number(store.get('ptx_cleared_' + room) || 0);
+  const msgs = new Map();
+  let es = null, retryTimer = null, pollTimer = null;
+
+  function setStatus(kind, text){
+    el.status.className = 'status ' + kind;
+    el.statusText.textContent = text;
+  }
+  function toast(t){
+    el.toast.textContent = t; el.toast.classList.add('show');
+    clearTimeout(toast._t); toast._t = setTimeout(() => el.toast.classList.remove('show'), 1800);
+  }
+  async function copyText(t){
+    try{ await navigator.clipboard.writeText(t); }
+    catch(e){
+      const ta = document.createElement('textarea'); ta.value = t; ta.style.position='fixed'; ta.style.opacity='0';
+      document.body.appendChild(ta); ta.select(); try{ document.execCommand('copy'); }catch(_){} ta.remove();
+    }
+    toast('Copied ✓');
+  }
+
+  // ---------- Rendering ----------
+  function render(){
+    const items = [...msgs.values()].filter(m => m.time > clearedAt).sort((a,b) => b.time - a.time);
+    el.list.innerHTML = '';
+    if (!items.length){
+      el.list.innerHTML = '<div class="empty">No messages yet. Type something and press Send.</div>';
+      return;
+    }
+    for (const m of items){
+      const box = document.createElement('div'); box.className = 'msg';
+      const meta = document.createElement('div'); meta.className = 'meta';
+      const who = document.createElement('span'); who.className = 'who'; who.textContent = m.device || 'Device';
+      const time = document.createElement('span');
+      time.textContent = new Date(m.time * 1000).toLocaleTimeString('en-US', {hour:'2-digit', minute:'2-digit'});
+      const sp = document.createElement('span'); sp.className = 'spacer';
+      const cp = document.createElement('button'); cp.className = 'copy'; cp.textContent = 'Copy';
+      cp.onclick = () => copyText(m.text);
+      meta.append(who, time, sp, cp);
+      const pre = document.createElement('pre'); pre.textContent = m.text; pre.dir = 'auto';
+      box.append(meta, pre); el.list.appendChild(box);
+    }
+  }
+
+  function ingest(raw){
+    if (!raw || raw.event !== 'message' || msgs.has(raw.id)) return;
+    let text = raw.message || '', dev = '';
+    try{
+      const o = JSON.parse(text);
+      if (o && typeof o.t === 'string'){ text = o.t; dev = o.d || ''; }
+    }catch(e){}
+    msgs.set(raw.id, { id: raw.id, time: raw.time, text, device: dev });
+    render();
+  }
+
+  // ---------- Cloud connection ----------
+  function connect(){
+    clearTimeout(retryTimer); clearInterval(pollTimer);
+    if (es) { es.close(); es = null; }
+    setStatus('', 'Connecting…');
+    try{
+      es = new EventSource(`${SERVER}/${PREFIX}${room}/sse?since=12h`);
+    }catch(e){ startPolling(); return; }
+    es.onopen = () => setStatus('on', 'Connected');
+    es.onmessage = e => { try{ ingest(JSON.parse(e.data)); }catch(_){} };
+    es.onerror = () => {
+      setStatus('off', 'Disconnected, retrying…');
+      if (es && es.readyState === 2){
+        es.close(); es = null;
+        retryTimer = setTimeout(connect, 3000);
+      }
+    };
+  }
+  // Fallback if SSE is unavailable
+  async function poll(){
+    try{
+      const r = await fetch(`${SERVER}/${PREFIX}${room}/json?poll=1&since=12h`);
+      const t = await r.text();
+      t.split('\n').filter(Boolean).forEach(l => { try{ ingest(JSON.parse(l)); }catch(_){} });
+      setStatus('on', 'Connected');
+    }catch(e){ setStatus('off', 'Offline'); }
+  }
+  function startPolling(){ poll(); pollTimer = setInterval(poll, 3000); }
+
+  document.addEventListener('visibilitychange', () => {
+    if (!document.hidden && (!es || es.readyState !== 1)) connect();
+  });
+  window.addEventListener('online', connect);
+
+  // ---------- Sending ----------
+  function payload(){ return JSON.stringify({ t: el.input.value, d: device }); }
+  function updateCount(){
+    const n = bytes(payload());
+    const over = n > MAX_BYTES + 40;
+    el.count.textContent = `${n} / ${MAX_BYTES} bytes`;
+    el.count.classList.toggle('bad', over);
+    el.send.disabled = !el.input.value.trim() || over;
+  }
+  async function send(){
+    if (el.send.disabled) return;
+    const body = payload();
+    el.send.disabled = true; const old = el.send.textContent; el.send.textContent = 'Sending…';
+    try{
+      const r = await fetch(`${SERVER}/${PREFIX}${room}`, { method:'POST', body });
+      if (!r.ok) throw new Error(r.status);
+      el.input.value = ''; toast('Sent ✓');
+      if (!es || es.readyState !== 1) poll();
+    }catch(e){
+      toast('Send failed. Check your connection.');
+    }finally{
+      el.send.textContent = old; updateCount();
+    }
+  }
+
+  el.input.addEventListener('input', updateCount);
+  el.send.addEventListener('click', send);
+  el.input.addEventListener('keydown', e => { if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') send(); });
+  $('clearInput').onclick = () => { el.input.value = ''; updateCount(); el.input.focus(); };
+  $('clearList').onclick = () => {
+    clearedAt = Math.floor(Date.now() / 1000);
+    store.set('ptx_cleared_' + room, String(clearedAt)); render();
+  };
+  $('copyLink').onclick = () => copyText(location.origin + location.pathname + '#' + room);
+  $('joinToggle').onclick = () => { el.join.classList.toggle('open'); el.joinInput.focus(); };
+  $('newRoom').onclick = () => { if (confirm('Create a new room? Your other devices will need the new link to connect.')) switchRoom(genRoom()); };
+  $('joinGo').onclick = () => {
+    const r = el.joinInput.value.trim().toLowerCase();
+    if (!validRoom(r)) return toast('Invalid code (6–32 letters/numbers)');
+    switchRoom(r);
+  };
+  el.joinInput.addEventListener('keydown', e => { if (e.key === 'Enter') $('joinGo').click(); });
+
+  function switchRoom(r){
+    room = r; store.set('ptx_room', room);
+    history.replaceState(null, '', '#' + room);
+    el.roomCode.textContent = room;
+    clearedAt = Number(store.get('ptx_cleared_' + room) || 0);
+    msgs.clear(); render(); el.join.classList.remove('open'); el.joinInput.value = '';
+    connect();
+  }
+  window.addEventListener('hashchange', () => {
+    const r = location.hash.replace('#','').toLowerCase();
+    if (validRoom(r) && r !== room) switchRoom(r);
+  });
+
+  render(); updateCount(); connect();
+})();
+</script>
+</body>
+</html>
