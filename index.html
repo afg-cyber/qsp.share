@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0b0f17">
+<title>Instant Text Transfer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0b0f17; --card:#131a26; --card2:#18212f; --line:#243146;
+    --text:#e6edf7; --muted:#8a9ab3; --accent:#6ea8ff; --accent2:#4f86f7;
+    --ok:#3ddc97; --warn:#ffb454; --bad:#ff6b6b;
+    --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,"Courier New",monospace;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;background:var(--bg);color:var(--text);
+    font-family:"Vazirmatn",system-ui,-apple-system,"Segoe UI",Tahoma,sans-serif;}
+  body{min-height:100dvh;display:flex;justify-content:center;
+    padding:max(16px,env(safe-area-inset-top)) 16px max(16px,env(safe-area-inset-bottom));
+    background:radial-gradient(900px 500px at 80% -10%,#16264a55,transparent),var(--bg);}
+  .app{width:100%;max-width:860px;display:flex;flex-direction:column}
+  .hidden{display:none!important}
+
+  .langbar{display:flex;justify-content:flex-end;margin-bottom:6px}
+  select{font:inherit;font-size:.85rem;color:var(--text);background:var(--card);border:1px solid var(--line);
+    border-radius:10px;padding:7px 10px;outline:none;cursor:pointer}
+  select:focus{border-color:var(--accent)}
+
+  h1{font-size:1.5rem;margin:8px 0 4px}
+  .sub{color:var(--muted);margin:0 0 20px;font-size:.95rem;line-height:1.8}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px}
+  .stack{display:flex;flex-direction:column;gap:14px}
+  .divider{display:flex;align-items:center;gap:10px;color:var(--muted);font-size:.85rem}
+  .divider::before,.divider::after{content:"";flex:1;height:1px;background:var(--line)}
+
+  button{font:inherit;color:var(--text);background:var(--card2);border:1px solid var(--line);
+    border-radius:12px;padding:11px 16px;cursor:pointer;transition:.15s;display:inline-flex;
+    align-items:center;justify-content:center;gap:6px;white-space:nowrap}
+  button:hover{border-color:#34476a;background:#1d2a3d}
+  button:active{transform:scale(.97)}
+  button.primary{background:linear-gradient(135deg,var(--accent2),#7a6bff);border:none;font-weight:700;padding:14px 18px}
+  button.primary:hover{filter:brightness(1.1)}
+  button.danger{color:var(--bad)}
+  button.icon{padding:10px 12px}
+
+  input{font:inherit;color:var(--text);background:#0e1421;border:1px solid var(--line);
+    border-radius:12px;padding:13px 14px;width:100%;outline:none;transition:.15s}
+  input:focus,textarea:focus{border-color:var(--accent);box-shadow:0 0 0 3px #6ea8ff22}
+  .join-row{display:flex;gap:10px}
+  #joinInput{text-align:center;letter-spacing:.3em;font-family:var(--mono);font-size:1.1rem;text-transform:uppercase;direction:ltr}
+  #joinInput::placeholder{letter-spacing:normal;font-family:inherit;font-size:.95rem}
+
+  .topbar{display:flex;align-items:center;gap:10px;margin-bottom:12px;flex-wrap:wrap}
+  .topbar .grow{flex:1}
+  .code-chip{font-family:var(--mono);letter-spacing:.2em;font-weight:700;background:#0e1421;
+    border:1px solid var(--line);padding:8px 12px;border-radius:10px;direction:ltr;cursor:pointer}
+  .status{display:flex;align-items:center;gap:8px;font-size:.85rem;color:var(--muted)}
+  .dot{width:9px;height:9px;border-radius:50%;background:var(--warn);box-shadow:0 0 8px currentColor;color:var(--warn)}
+  .dot.ok{background:var(--ok);color:var(--ok)}
+  .dot.bad{background:var(--bad);color:var(--bad)}
+
+  details.qr{background:var(--card);border:1px solid var(--line);border-radius:14px;margin-bottom:12px}
+  details.qr summary{padding:12px 16px;cursor:pointer;color:var(--muted);list-style:none;display:flex;justify-content:space-between}
+  details.qr summary::-webkit-details-marker{display:none}
+  .qr-body{display:flex;flex-direction:column;align-items:center;gap:12px;padding:4px 16px 18px}
+  #qrCanvas{width:220px;height:220px;max-width:100%;border-radius:12px;background:#fff;image-rendering:pixelated}
+  .qr-link{direction:ltr;font-family:var(--mono);font-size:.75rem;color:var(--muted);word-break:break-all;text-align:center}
+
+  textarea{width:100%;min-height:46dvh;resize:vertical;font-family:var(--mono);font-size:.95rem;line-height:1.65;
+    color:var(--text);background:#0e1421;border:1px solid var(--line);border-radius:14px;padding:14px;outline:none;
+    tab-size:2;transition:.15s}
+  .toolbar{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;align-items:center}
+  .toolbar .grow{flex:1}
+  .meta{color:var(--muted);font-size:.8rem}
+
+  .links{margin-top:14px}
+  .links h3{font-size:.9rem;color:var(--muted);margin:0 0 8px;font-weight:600}
+  .links a{display:block;direction:ltr;text-align:left;color:var(--accent);text-decoration:none;font-family:var(--mono);
+    font-size:.8rem;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:9px 12px;
+    margin-bottom:6px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+  .toast{position:fixed;bottom:max(24px,env(safe-area-inset-bottom));left:50%;transform:translateX(-50%) translateY(20px);
+    background:#1e2b40;border:1px solid var(--line);padding:10px 18px;border-radius:999px;opacity:0;pointer-events:none;
+    transition:.25s;font-size:.9rem;z-index:10;max-width:92vw;text-align:center}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+  .note{color:var(--muted);font-size:.78rem;line-height:1.8;margin-top:16px}
+
+  @media (max-width:520px){
+    body{padding-left:12px;padding-right:12px}
+    .toolbar button{flex:1}
+    .toolbar .grow{display:none}
+    textarea{min-height:42dvh}
+  }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <div class="langbar">
+    <select id="langSelect" aria-label="Language"></select>
+  </div>
+
+  <!-- Home -->
+  <section id="home">
+    <h1>📡 <span data-i18n="title"></span></h1>
+    <p class="sub" data-i18n="subtitle"></p>
+    <div class="card stack">
+      <button class="primary" id="createBtn" data-i18n="create"></button>
+      <div class="divider" data-i18n="or"></div>
+      <form class="join-row" id="joinForm" autocomplete="off">
+        <input id="joinInput" data-i18n-placeholder="joinPlaceholder" maxlength="12" inputmode="text" autocapitalize="characters" spellcheck="false">
+        <button type="submit" data-i18n="join"></button>
+      </form>
+    </div>
+    <p class="note" data-i18n="note"></p>
+  </section>
+
+  <!-- Room -->
+  <section id="room" class="hidden">
+    <div class="topbar">
+      <button class="icon" id="leaveBtn" data-i18n="leave"></button>
+      <div class="code-chip" id="codeChip" data-i18n-title="copyCode"></div>
+      <div class="grow"></div>
+      <div class="status"><span class="dot" id="dot"></span><span id="statusText"></span></div>
+    </div>
+
+    <details class="qr" id="qrBox">
+      <summary><span data-i18n="qrSummary"></span><span>▾</span></summary>
+      <div class="qr-body">
+        <canvas id="qrCanvas" width="240" height="240"></canvas>
+        <div class="qr-link" id="qrLink"></div>
+        <button id="copyLinkBtn" data-i18n="copyLink"></button>
+      </div>
+    </details>
+
+    <textarea id="editor" dir="auto" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off"
+      data-i18n-placeholder="editorPlaceholder"></textarea>
+
+    <div class="toolbar">
+      <button id="copyBtn" data-i18n="copy"></button>
+      <button id="pasteBtn" data-i18n="paste"></button>
+      <button id="clearBtn" class="danger" data-i18n="clear"></button>
+      <div class="grow"></div>
+      <span class="meta" id="meta"></span>
+    </div>
+
+    <div class="links hidden" id="linksBox">
+      <h3 data-i18n="links"></h3>
+      <div id="linksList"></div>
+    </div>
+  </section>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>
+<script>
+(() => {
+  'use strict';
+
+  /* =====================================================================
+   *  LANGUAGES
+   *  To add a new language: copy one block below, change the key
+   *  (e.g. "ar", "tr", "ps"), and translate the strings.
+   *    name   → label shown in the language menu
+   *    dir    → "rtl" or "ltr"
+   *    locale → used for number formatting (Intl)
+   *  Missing keys automatically fall back to English.
+   *  {n} is replaced with a formatted number.
+   * ===================================================================== */
+  const LANGS = {
+    fa: {
+      name: 'فارسی', dir: 'rtl', locale: 'fa',
+      t: {
+        pageTitle: 'انتقال آنی متن',
+        title: 'انتقال آنی متن',
+        subtitle: 'متن، لینک و کدهای طولانی را بین گوشی و کامپیوتر، زنده و بدون نیاز به فایل منتقل کنید.',
+        create: '✨ ساخت اتاق جدید و تولید QR Code',
+        or: 'یا',
+        joinPlaceholder: 'ورود با کد اتاق',
+        join: 'ورود',
+        note: 'ارتباط به‌صورت مستقیم (WebRTC) بین دستگاه‌ها برقرار می‌شود و متن شما روی هیچ سروری ذخیره نمی‌شود. تا زمانی که حداقل یک دستگاه در اتاق باز باشد، اتاق فعال می‌ماند.',
+        leave: '→ خروج',
+        copyCode: 'کپی کد اتاق',
+        qrSummary: '📱 QR Code و لینک ورود',
+        copyLink: '🔗 کپی لینک اتاق',
+        editorPlaceholder: 'اینجا بنویسید یا پیست کنید… روی همه دستگاه‌های داخل اتاق زنده نمایش داده می‌شود.',
+        copy: '📋 کپی متن',
+        paste: '📥 چسباندن',
+        clear: '🗑 پاک‌کردن',
+        chars: '{n} کاراکتر',
+        links: 'لینک‌های داخل متن',
+        connecting: 'در حال اتصال…',
+        reconnecting: 'اتصال مجدد…',
+        online: 'آنلاین · {n} دستگاه',
+        invalidCode: 'کد اتاق معتبر نیست',
+        codeCopied: 'کد اتاق کپی شد',
+        linkCopied: 'لینک کپی شد',
+        textCopied: 'متن کپی شد',
+        copyFailed: 'کپی ناموفق بود',
+        pasted: 'چسبانده شد',
+        clipboardEmpty: 'کلیپ‌بورد خالی است',
+        clipboardDenied: 'اجازه دسترسی به کلیپ‌بورد داده نشد؛ دستی پیست کنید',
+        confirmClear: 'متن برای همه دستگاه‌ها پاک شود؟'
+      }
+    },
+    en: {
+      name: 'English', dir: 'ltr', locale: 'en',
+      t: {
+        pageTitle: 'Instant Text Transfer',
+        title: 'Instant Text Transfer',
+        subtitle: 'Send text, links and long code snippets between your phone and computer in real time — no files needed.',
+        create: '✨ Create new room & generate QR Code',
+        or: 'or',
+        joinPlaceholder: 'Enter room code',
+        join: 'Join',
+        note: 'Devices connect directly (WebRTC) and your text is not stored on any server. The room stays alive as long as at least one device keeps it open.',
+        leave: '← Leave',
+        copyCode: 'Copy room code',
+        qrSummary: '📱 QR Code & join link',
+        copyLink: '🔗 Copy room link',
+        editorPlaceholder: 'Type or paste here… it appears live on every device in the room.',
+        copy: '📋 Copy text',
+        paste: '📥 Paste',
+        clear: '🗑 Clear',
+        chars: '{n} characters',
+        links: 'Links in the text',
+        connecting: 'Connecting…',
+        reconnecting: 'Reconnecting…',
+        online: 'Online · {n} devices',
+        invalidCode: 'Invalid room code',
+        codeCopied: 'Room code copied',
+        linkCopied: 'Link copied',
+        textCopied: 'Text copied',
+        copyFailed: 'Copy failed',
+        pasted: 'Pasted',
+        clipboardEmpty: 'Clipboard is empty',
+        clipboardDenied: 'Clipboard access denied — paste manually',
+        confirmClear: 'Clear the text on all devices?'
+      }
+    }
+  };
+  const DEFAULT_LANG = 'en';
+
+  /* ---------- i18n engine ---------- */
+  let lang = DEFAULT_LANG;
+  const fmtNum = n => { try { return new Intl.NumberFormat(LANGS[lang].locale || lang).format(n); } catch { return String(n); } };
+  function t(key, vars){
+    let s = (LANGS[lang].t[key] ?? LANGS[DEFAULT_LANG].t[key] ?? key);
+    if (vars) for (const k in vars) s = s.replaceAll('{' + k + '}', fmtNum(vars[k]));
+    return s;
+  }
+  function detectLang(){
+    try { const saved = localStorage.getItem('lang'); if (saved && LANGS[saved]) return saved; } catch {}
+    for (const l of (navigator.languages || [navigator.language || ''])){
+      const base = String(l).toLowerCase().split('-')[0];
+      if (LANGS[base]) return base;
+      if (base === 'prs' && LANGS.fa) return 'fa'; // Dari
+    }
+    return DEFAULT_LANG;
+  }
+  function applyLang(code){
+    if (!LANGS[code]) code = DEFAULT_LANG;
+    lang = code;
+    try { localStorage.setItem('lang', code); } catch {}
+    const L = LANGS[code];
+    document.documentElement.lang = code;
+    document.documentElement.dir = L.dir || 'ltr';
+    document.title = t('pageTitle');
+    document.querySelectorAll('[data-i18n]').forEach(el => { el.textContent = t(el.dataset.i18n); });
+    document.querySelectorAll('[data-i18n-placeholder]').forEach(el => { el.placeholder = t(el.dataset.i18nPlaceholder); });
+    document.querySelectorAll('[data-i18n-title]').forEach(el => { el.title = t(el.dataset.i18nTitle); });
+    $('langSelect').value = code;
+    setStatus(S.statusKind);
+    updateMeta();
+  }
+
+  /* ---------- helpers ---------- */
+  const $ = id => document.getElementById(id);
+  const ALPHABET = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  const ICE = { iceServers: [
+    { urls: 'stun:stun.l.google.com:19302' },
+    { urls: 'stun:stun1.l.google.com:19302' },
+    { urls: 'stun:global.stun.twilio.com:3478' }
+  ]};
+  const genCode = () => {
+    const a = new Uint32Array(6); crypto.getRandomValues(a);
+    return [...a].map(n => ALPHABET[n % ALPHABET.length]).join('');
+  };
+  const cleanCode = s => (s || '').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 12);
+  const hostId = c => 'qtxfer-' + c.toLowerCase();
+
+  let toastTimer;
+  function toast(msg){
+    const el = $('toast'); el.textContent = msg; el.classList.add('show');
+    clearTimeout(toastTimer); toastTimer = setTimeout(() => el.classList.remove('show'), 1800);
+  }
+
+  async function copyText(text){
+    try { await navigator.clipboard.writeText(text); return true; }
+    catch {
+      const ta = document.createElement('textarea');
+      ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+      document.body.appendChild(ta); ta.select();
+      let ok = false; try { ok = document.execCommand('copy'); } catch {}
+      ta.remove(); return ok;
+    }
+  }
+
+  /* ---------- state ---------- */
+  const S = {
+    code: null, peer: null, isHost: false, gen: 0,
+    conns: new Map(),     // host: peerId -> DataConnection
+    hostConn: null,       // client: connection to host
+    text: '', count: 1, timers: new Set(), sendTimer: null,
+    statusKind: 'connecting'
+  };
+  const editor = $('editor');
+
+  function later(fn, ms){
+    const id = setTimeout(() => { S.timers.delete(id); fn(); }, ms);
+    S.timers.add(id); return id;
+  }
+  function clearTimers(){ S.timers.forEach(clearTimeout); S.timers.clear(); clearTimeout(S.sendTimer); }
+
+  /* ---------- UI ---------- */
+  function setStatus(kind){
+    S.statusKind = kind;
+    const dot = $('dot'), txt = $('statusText');
+    dot.className = 'dot';
+    if (kind === 'connecting'){ txt.textContent = t('connecting'); }
+    else if (kind === 'reconnecting'){ txt.textContent = t('reconnecting'); dot.classList.add('bad'); }
+    else { dot.classList.add('ok'); txt.textContent = t('online', { n: S.count }); }
+  }
+  function updateMeta(){
+    const v = editor.value;
+    $('meta').textContent = t('chars', { n: v.length });
+    const urls = [...new Set(v.match(/https?:\/\/[^\s<>"'`)\]]+/gi) || [])].slice(0, 12);
+    const box = $('linksBox'), list = $('linksList');
+    list.textContent = '';
+    urls.forEach(u => {
+      const a = document.createElement('a');
+      a.href = u; a.textContent = u; a.target = '_blank'; a.rel = 'noopener noreferrer';
+      list.appendChild(a);
+    });
+    box.classList.toggle('hidden', urls.length === 0);
+  }
+  function roomLink(code){ return location.origin + location.pathname + '#room=' + code; }
+
+  function drawQR(text){
+    const qr = qrcode(0, 'M'); qr.addData(text); qr.make();
+    const n = qr.getModuleCount(), quiet = 2, size = n + quiet * 2;
+    const scale = Math.max(3, Math.ceil(300 / size));
+    const c = $('qrCanvas'); c.width = c.height = size * scale;
+    const ctx = c.getContext('2d');
+    ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, c.width, c.height);
+    ctx.fillStyle = '#0b0f17';
+    for (let r = 0; r < n; r++) for (let k = 0; k < n; k++)
+      if (qr.isDark(r, k)) ctx.fillRect((k + quiet) * scale, (r + quiet) * scale, scale, scale);
+  }
+
+  function showView(name){
+    $('home').classList.toggle('hidden', name !== 'home');
+    $('room').classList.toggle('hidden', name !== 'room');
+  }
+
+  /* ---------- text sync ---------- */
+  function applyRemote(v){
+    S.text = v;
+    if (editor.value === v) return;
+    const focused = document.activeElement === editor;
+    const s = editor.selectionStart, e = editor.selectionEnd, st = editor.scrollTop;
+    editor.value = v;
+    if (focused){ try { editor.setSelectionRange(Math.min(s, v.length), Math.min(e, v.length)); } catch {} }
+    editor.scrollTop = st;
+    updateMeta();
+  }
+
+  function pushLocal(){
+    const msg = { t: 'text', v: S.text };
+    if (S.isHost){ S.conns.forEach(c => c.open && c.send(msg)); }
+    else if (S.hostConn && S.hostConn.open){ S.hostConn.send(msg); }
+  }
+  function onLocalInput(){
+    S.text = editor.value; updateMeta();
+    clearTimeout(S.sendTimer); S.sendTimer = setTimeout(pushLocal, 120);
+  }
+  function broadcastCount(){
+    S.count = S.conns.size + 1; setStatus('online');
+    S.conns.forEach(c => c.open && c.send({ t: 'count', n: S.count }));
+  }
+
+  /* ---------- networking (host / client with auto-failover) ---------- */
+  function destroyPeer(){
+    S.conns.forEach(c => { try { c.close(); } catch {} });
+    S.conns.clear();
+    if (S.hostConn){ try { S.hostConn.close(); } catch {} S.hostConn = null; }
+    if (S.peer){ try { S.peer.destroy(); } catch {} S.peer = null; }
+    S.isHost = false;
+  }
+
+  function connect(){
+    clearTimers(); destroyPeer();
+    const gen = ++S.gen, code = S.code;
+    setStatus('connecting');
+
+    const retry = (ms = 600 + Math.random() * 1400) => {
+      if (gen !== S.gen) return;
+      setStatus('reconnecting'); later(() => { if (gen === S.gen) connect(); }, ms);
+    };
+
+    // Try to become the host first
+    const peer = new Peer(hostId(code), { config: ICE });
+    S.peer = peer;
+
+    peer.on('open', () => {
+      if (gen !== S.gen) return;
+      S.isHost = true; S.count = 1; setStatus('online');
+    });
+    peer.on('connection', conn => {
+      if (gen !== S.gen) return;
+      conn.on('open', () => {
+        S.conns.set(conn.peer, conn);
+        conn.send({ t: 'text', v: S.text });
+        broadcastCount();
+      });
+      conn.on('data', d => {
+        if (!d || typeof d !== 'object') return;
+        if (d.t === 'text' && typeof d.v === 'string'){
+          applyRemote(d.v);
+          S.conns.forEach(c => { if (c !== conn && c.open) c.send({ t: 'text', v: d.v }); });
+        } else if (d.t === 'hello' && typeof d.v === 'string' && !S.text && d.v){
+          applyRemote(d.v); conn.send({ t: 'text', v: S.text });
+        }
+      });
+      const gone = () => { if (S.conns.get(conn.peer) === conn){ S.conns.delete(conn.peer); broadcastCount(); } };
+      conn.on('close', gone); conn.on('error', gone);
+    });
+    peer.on('disconnected', () => {
+      if (gen !== S.gen || !S.isHost) return;
+      try { peer.reconnect(); } catch {}
+    });
+    peer.on('error', err => {
+      if (gen !== S.gen) return;
+      if (err.type === 'unavailable-id'){ try { peer.destroy(); } catch {} joinAsClient(gen, retry); }
+      else if (S.isHost){ /* transient errors: host keeps running */ }
+      else retry(2000);
+    });
+  }
+
+  function joinAsClient(gen, retry){
+    if (gen !== S.gen) return;
+    const peer = new Peer({ config: ICE });
+    S.peer = peer; S.isHost = false;
+
+    peer.on('open', () => {
+      if (gen !== S.gen) return;
+      const conn = peer.connect(hostId(S.code), { reliable: true });
+      S.hostConn = conn;
+      const timeout = later(() => { if (!conn.open) retry(); }, 10000);
+      conn.on('open', () => {
+        clearTimeout(timeout);
+        if (gen !== S.gen) return;
+        S.count = 2; setStatus('online');
+        if (S.text) conn.send({ t: 'hello', v: S.text });
+      });
+      conn.on('data', d => {
+        if (!d || typeof d !== 'object') return;
+        if (d.t === 'text' && typeof d.v === 'string') applyRemote(d.v);
+        else if (d.t === 'count'){ S.count = d.n | 0; setStatus('online'); }
+      });
+      conn.on('close', () => retry());
+      conn.on('error', () => retry());
+    });
+    peer.on('error', err => {
+      if (gen !== S.gen) return;
+      // No host yet or network issue → retry (this device will probably become the host)
+      retry(err.type === 'peer-unavailable' ? 400 + Math.random() * 800 : 2000);
+    });
+    peer.on('disconnected', () => { try { peer.reconnect(); } catch {} });
+  }
+
+  /* ---------- room lifecycle ---------- */
+  function enterRoom(code, fresh){
+    code = cleanCode(code);
+    if (code.length < 4){ toast(t('invalidCode')); return; }
+    S.code = code;
+    history.replaceState(null, '', '#room=' + code);
+    $('codeChip').textContent = code;
+    const link = roomLink(code);
+    $('qrLink').textContent = link;
+    try { drawQR(link); } catch (e) { console.error(e); }
+    $('qrBox').open = !!fresh;
+    showView('room');
+    connect();
+    if (!matchMedia('(pointer:coarse)').matches) editor.focus();
+  }
+
+  function leaveRoom(){
+    S.gen++; clearTimers(); destroyPeer();
+    S.code = null; S.text = ''; editor.value = ''; updateMeta();
+    setStatus('connecting');
+    history.replaceState(null, '', location.pathname);
+    showView('home');
+  }
+
+  /* ---------- events ---------- */
+  $('createBtn').onclick = () => enterRoom(genCode(), true);
+  $('joinForm').addEventListener('submit', e => { e.preventDefault(); enterRoom($('joinInput').value, false); });
+  $('joinInput').addEventListener('input', e => { e.target.value = cleanCode(e.target.value); });
+  $('leaveBtn').onclick = leaveRoom;
+  $('codeChip').onclick = async () => toast(t((await copyText(S.code)) ? 'codeCopied' : 'copyFailed'));
+  $('copyLinkBtn').onclick = async () => toast(t((await copyText(roomLink(S.code))) ? 'linkCopied' : 'copyFailed'));
+  $('copyBtn').onclick = async () => toast(t((await copyText(editor.value)) ? 'textCopied' : 'copyFailed'));
+  $('pasteBtn').onclick = async () => {
+    try {
+      const txt = await navigator.clipboard.readText();
+      if (!txt) return toast(t('clipboardEmpty'));
+      editor.setRangeText(txt, editor.selectionStart, editor.selectionEnd, 'end');
+      onLocalInput(); toast(t('pasted'));
+    } catch { toast(t('clipboardDenied')); editor.focus(); }
+  };
+  $('clearBtn').onclick = () => {
+    if (editor.value && !confirm(t('confirmClear'))) return;
+    editor.value = ''; onLocalInput(); clearTimeout(S.sendTimer); pushLocal();
+  };
+  editor.addEventListener('input', onLocalInput);
+  editor.addEventListener('keydown', e => {
+    if (e.key === 'Tab' && !e.shiftKey && !e.ctrlKey && !e.metaKey){
+      e.preventDefault(); editor.setRangeText('  ', editor.selectionStart, editor.selectionEnd, 'end'); onLocalInput();
+    }
+  });
+
+  // language menu (built from LANGS, so new languages appear automatically)
+  const sel = $('langSelect');
+  Object.entries(LANGS).forEach(([code, L]) => {
+    const o = document.createElement('option'); o.value = code; o.textContent = L.name; sel.appendChild(o);
+  });
+  sel.addEventListener('change', () => applyLang(sel.value));
+
+  function fromHash(){
+    const m = location.hash.match(/room=([A-Za-z0-9]+)/);
+    if (m){ const c = cleanCode(m[1]); if (c && c !== S.code) enterRoom(c, false); }
+    else if (S.code){ leaveRoom(); }
+  }
+  window.addEventListener('hashchange', fromHash);
+  window.addEventListener('online', () => { if (S.code) connect(); });
+
+  applyLang(detectLang());
+  fromHash();
+})();
+</script>
+</body>
+</html>
