@@ -269,7 +269,7 @@ const CONFIG = {
   maxTextBytes: 15000,                     // text limit (UTF-8 bytes)
   liveDebounceMs: 60,                      // delay before broadcasting live edits
   relayChunkBytes: 2800,                   // max bytes of text per relay message (relay limit ≈ 4 KB)
-  chunkSize: 64 * 1024,                    // bytes per data-channel message
+  chunkSize: 512 64 * 1024,                    // bytes per data-channel message
   readBlock: 4 * 1024 * 1024,              // bytes read from disk at once by the sender
   bufferHigh: 4 * 1024 * 1024,             // pause sending when channel buffer exceeds this
   bufferLow: 1 * 1024 * 1024,              // resume sending when buffer falls below this
