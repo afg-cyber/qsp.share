@@ -1,0 +1,1241 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<meta name="google-site-verification" content="tpkNhher90hnbwTnqPTkPQGsQdwATkfV1fgkeTHM8KM" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<title>qsp.share</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/vazirmatn@33.0.3/Vazirmatn-font-face.css">
+<style>
+  :root{
+    --bg:#f3f5f9; --card:#ffffff; --soft:#eef1f7; --border:#dde2ec;
+    --text:#172033; --muted:#6a7589; --accent:#2f6bff; --accent-ink:#fff;
+    --peer:#eceff6; --ok:#12a46b; --warn:#d98a00; --err:#e5484d;
+    --shadow:0 1px 2px rgba(16,24,40,.06),0 4px 14px rgba(16,24,40,.04);
+  }
+  @media (prefers-color-scheme:dark){
+    :root{
+      --bg:#0e131c; --card:#161c28; --soft:#1d2534; --border:#2a3345;
+      --text:#e8edf6; --muted:#8d99b0; --accent:#5b8cff; --accent-ink:#0b1220;
+      --peer:#222b3d; --ok:#34d399; --warn:#fbbf24; --err:#f87171;
+      --shadow:0 1px 2px rgba(0,0,0,.3);
+    }
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;background:var(--bg);color:var(--text);
+    font-family:'Vazirmatn',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;line-height:1.6;font-size:15px}
+  body{min-height:100vh;padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom)}
+  .muted{color:var(--muted)} .small{font-size:.78rem}
+  button{font-family:inherit;cursor:pointer;border:0;color:inherit}
+  .btn{background:var(--soft);border:1px solid var(--border);padding:7px 14px;border-radius:10px;font-size:.86rem;transition:.12s}
+  .btn:hover{border-color:var(--accent)}
+  .btn:active{transform:scale(.97)}
+  .btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink);font-weight:600}
+  .btn.primary:hover{filter:brightness(1.08)}
+  .btn.danger:hover{border-color:var(--err);color:var(--err)}
+  .btn:disabled{opacity:.45;cursor:not-allowed}
+  :focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+  /* ---------- Header ---------- */
+  .top{max-width:1180px;margin:0 auto;padding:14px 16px 6px;display:flex;align-items:center;justify-content:space-between;gap:10px}
+  .brand{display:flex;align-items:center;gap:10px;font-weight:700;font-size:1.1rem}
+  .logo{width:32px;height:32px;border-radius:9px;display:grid;place-items:center;background:var(--accent);color:var(--accent-ink);font-size:17px}
+  .pill{display:inline-flex;align-items:center;gap:8px;font-size:.8rem;color:var(--muted);background:var(--card);
+    border:1px solid var(--border);padding:5px 12px;border-radius:999px}
+  .dot{width:8px;height:8px;border-radius:50%;background:var(--warn)}
+  .pill.on .dot{background:var(--ok)} .pill.off .dot{background:var(--err)}
+  .pill.on{color:var(--text)}
+
+  /* ---------- Main layout: chat | files ---------- */
+  .layout{max-width:1180px;margin:0 auto;padding:8px 16px 8px;display:grid;grid-template-columns:minmax(0,3fr) minmax(0,2fr);gap:14px;align-items:stretch}
+  .card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:14px;box-shadow:var(--shadow);display:flex;flex-direction:column;min-width:0}
+  .card-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:10px}
+  .card-head h2{margin:0;font-size:1rem}
+  .chat-card{height:min(580px,calc(100vh - 130px));height:min(580px,calc(100dvh - 130px));min-height:360px}
+  @media (max-width:860px){
+    .layout{grid-template-columns:1fr}
+    .chat-card{height:min(520px,calc(100vh - 110px));height:min(520px,calc(100dvh - 110px))}
+  }
+
+  /* ---------- Chat ---------- */
+  .badge{font-size:.76rem;padding:2px 10px;border-radius:999px;border:1px solid var(--border);color:var(--warn);background:var(--soft)}
+  .badge.live{color:var(--ok)}
+  .chat-wrap{position:relative;flex:1;min-height:0;display:flex}
+  .chat{flex:1;overflow-y:auto;background:var(--soft);border-radius:12px;padding:10px;display:flex;flex-direction:column;gap:6px}
+  .chat-empty{margin:auto;text-align:center;color:var(--muted);font-size:.88rem;padding:20px}
+  .bubble{max-width:84%;padding:7px 11px 4px;border-radius:14px;word-break:break-word}
+  .bubble.me{align-self:flex-end;background:var(--accent);color:var(--accent-ink);border-bottom-right-radius:4px}
+  .bubble.peer{align-self:flex-start;background:var(--peer);border-bottom-left-radius:4px}
+  .bubble .body{white-space:pre-wrap;font-size:.93rem;line-height:1.6;unicode-bidi:plaintext}
+  .bubble .foot{display:flex;gap:10px;align-items:center;justify-content:flex-end;font-size:.68rem;opacity:.75;margin-top:1px}
+  .bubble .cp{background:transparent;padding:0;font-size:.68rem;opacity:0;text-decoration:underline}
+  .bubble:hover .cp,.bubble:focus-within .cp{opacity:1}
+  @media (hover:none){.bubble .cp{opacity:.85}}
+  .jump{position:absolute;left:50%;bottom:10px;transform:translateX(-50%);background:var(--accent);color:var(--accent-ink);padding:4px 14px;
+    border-radius:999px;font-size:.76rem;box-shadow:0 4px 14px rgba(0,0,0,.25)}
+  .jump[hidden]{display:none}
+  .typing{height:20px;font-size:.76rem;color:var(--muted);padding:2px 4px;opacity:0;transition:opacity .2s}
+  .typing.show{opacity:1}
+  .typing i{display:inline-block;width:4px;height:4px;border-radius:50%;background:var(--muted);margin-left:3px;animation:blink 1.2s infinite}
+  .typing i:nth-child(2){animation-delay:.2s}.typing i:nth-child(3){animation-delay:.4s}
+  @keyframes blink{0%,80%,100%{opacity:.2}40%{opacity:1}}
+  .composer{display:flex;gap:8px;align-items:flex-end}
+  .composer textarea{flex:1;min-height:44px;max-height:140px;resize:none;background:var(--card);color:var(--text);
+    border:1px solid var(--border);border-radius:12px;padding:10px 14px;font-family:inherit;font-size:.95rem;line-height:1.6;outline:none}
+  .composer textarea:focus{border-color:var(--accent)}
+  .composer textarea::placeholder{color:var(--muted)}
+  .composer .btn{height:44px;padding:0 22px}
+  .bar{display:flex;align-items:center;gap:8px;margin-top:8px}
+  .bar .spacer{flex:1}
+  .count{font-size:.76rem;color:var(--muted)} .count.bad{color:var(--err)}
+
+  /* ---------- Files ---------- */
+  .stats{display:grid;grid-template-columns:1fr 1fr;gap:6px 12px;background:var(--soft);border-radius:12px;padding:8px 12px;margin-bottom:10px;font-size:.8rem}
+  .stats div{display:flex;justify-content:space-between;gap:8px;color:var(--muted)}
+  .stats b{color:var(--text);font-weight:600;font-variant-numeric:tabular-nums}
+  .stats .full{grid-column:1/-1}
+  .stats b.warn{color:var(--warn)}
+  .drop{border:2px dashed var(--border);border-radius:14px;padding:16px 12px;text-align:center;color:var(--muted);
+    font-size:.88rem;display:flex;flex-direction:column;gap:8px;align-items:center;transition:.12s}
+  .drop.over{border-color:var(--accent);background:var(--soft);color:var(--text)}
+  .drop-ico{font-size:26px;line-height:1}
+  .transfers{display:flex;flex-direction:column;gap:8px;margin-top:10px;overflow:auto;flex:1;min-height:0}
+  .item{background:var(--soft);border:1px solid var(--border);border-radius:12px;padding:9px 12px}
+  .item .name{font-size:.88rem;font-weight:600;word-break:break-all}
+  .item .meta{font-size:.74rem;color:var(--muted);margin:2px 0 7px}
+  .prog{height:6px;border-radius:6px;background:var(--border);overflow:hidden}
+  .prog i{display:block;height:100%;width:0;background:var(--accent);transition:width .15s}
+  .prog.done i{background:var(--ok)} .prog.bad i{background:var(--err)} .prog.pause i{background:var(--warn)}
+  .acts{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap}
+  .acts .btn{padding:3px 12px;font-size:.76rem}
+  .hint{font-size:.74rem;color:var(--muted);margin:10px 2px 0}
+
+  /* ---------- Connect (bottom) ---------- */
+  .connect{max-width:1180px;margin:0 auto;padding:8px 16px 28px}
+  .connect .card{padding:10px 14px;border-radius:12px;flex-direction:row;align-items:stretch;gap:16px}
+  .conn-half{flex:1;min-width:0;display:flex;flex-direction:column;gap:6px;justify-content:center}
+  .conn-sep{width:1px;background:var(--border);flex:none}
+  @media (max-width:700px){
+    .connect .card{flex-direction:column;gap:12px}
+    .conn-sep{width:auto;height:1px}
+  }
+  .label{font-size:.7rem;color:var(--muted)}
+  .code{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:1.25rem;letter-spacing:3px;font-weight:700;line-height:1.1}
+  .field{width:100%;background:var(--card);border:1px solid var(--border);color:var(--text);border-radius:8px;
+    padding:4px 10px;font-size:.72rem;font-family:ui-monospace,Menlo,Consolas,monospace;outline:none}
+  .field:focus{border-color:var(--accent)}
+  .row{display:flex;gap:6px;flex-wrap:wrap}
+  .connect .btn{padding:4px 10px;font-size:.76rem}
+  .join-row{display:flex;gap:6px;align-items:stretch}
+  #joinInput{flex:1;min-width:0;width:auto;font-size:.95rem;letter-spacing:3px;text-align:center;padding:5px 10px}
+
+  .toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom));transform:translate(-50%,20px);opacity:0;
+    background:var(--text);color:var(--bg);padding:8px 18px;border-radius:12px;font-size:.86rem;pointer-events:none;
+    transition:.25s;z-index:60;max-width:90vw;text-align:center}
+  .toast.show{opacity:1;transform:translate(-50%,0)}
+  ::-webkit-scrollbar{width:8px;height:8px}::-webkit-scrollbar-thumb{background:var(--border);border-radius:8px}
+  @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="brand"><span class="logo">⚡</span><span>qsp.share</span><span class="muted" style="margin-inline-start:14px;font-weight:600">786</span></div>
+  <div class="pill" id="linkPill"><span class="dot"></span><span id="linkPillText">Starting…</span></div>
+</header>
+
+<!-- ===== Top: Chat + Files ===== -->
+<main class="layout">
+  <section class="card chat-card">
+    <div class="card-head">
+      <h2>Chat</h2>
+      <span class="badge" id="liveBadge">Waiting for peer…</span>
+    </div>
+    <div class="chat-wrap">
+      <div class="chat" id="chatLog" aria-live="polite"></div>
+      <button class="jump" id="chatJump" hidden>↓ New messages</button>
+    </div>
+    <div class="typing" id="typing" aria-live="polite">Peer is typing<i></i><i></i><i></i></div>
+    <div class="composer">
+      <textarea id="chatInput" rows="1" dir="auto" spellcheck="false" placeholder="Type a message or paste code…"></textarea>
+      <button class="btn primary" id="sendBtn">Send</button>
+    </div>
+    <div class="bar">
+      <span class="count" id="count">0 / 15000 bytes</span>
+      <span class="spacer"></span>
+      <button class="btn danger" id="clearBtn">Clear chat</button>
+    </div>
+  </section>
+
+  <section class="card" id="filePanel">
+    <div class="card-head"><h2>Files</h2><span class="muted small">Direct P2P · no cloud</span></div>
+    <div class="stats">
+      <div><span>↑ Upload</span><b id="stUp">0.00 MB/s</b></div>
+      <div><span>↓ Download</span><b id="stDown">0.00 MB/s</b></div>
+      <div><span>Sent</span><b id="stSent">0 B</b></div>
+      <div><span>Received</span><b id="stRecv">0 B</b></div>
+      <div class="full"><span>Route</span><b id="stRoute">—</b></div>
+    </div>
+    <div class="drop" id="drop">
+      <div class="drop-ico">📂</div>
+      <div>Drop files here</div>
+      <button class="btn primary" id="pickBtn">Choose files</button>
+      <input type="file" id="fileInput" multiple hidden>
+    </div>
+    <div class="transfers" id="transfers"></div>
+    <p class="hint">Keep both tabs open during a transfer. Large files are streamed in chunks.</p>
+  </section>
+</main>
+
+<!-- ===== Bottom: Room / Share ===== -->
+<section class="connect" id="connect">
+  <div class="card">
+    <div class="conn-half">
+      <div class="label">Your room code</div>
+      <div class="code" id="roomCode">------</div>
+      <input class="field" id="linkField" readonly aria-label="Room link">
+      <div class="row">
+        <button class="btn primary" id="copyLinkBtn">Copy link</button>
+        <button class="btn" id="copyCodeBtn">Copy code</button>
+      </div>
+    </div>
+    <div class="conn-sep"></div>
+    <div class="conn-half">
+      <div class="label">Join another room</div>
+      <div class="join-row">
+        <input class="field" id="joinInput" inputmode="numeric" maxlength="6" placeholder="123456" autocomplete="off" aria-label="Room code to join">
+        <button class="btn primary" id="joinBtn">Join</button>
+      </div>
+      <span class="muted small">Enter the 6-digit code from the other device</span>
+    </div>
+  </div>
+</section>
+
+<div class="toast" id="toast"></div>
+
+<script>
+(() => {
+'use strict';
+
+/* =====================================================================
+ * qsp.share — single-file app
+ *  1. CONFIG   2. UTILS   3. RELAY   4. PEER LINK   5. METER
+ *  6. SINKS    7. TEXT SYNC   8. FILE TRANSFER   9. UI   10. BOOTSTRAP
+ * ===================================================================== */
+
+/* ============================== 1. CONFIG ============================== */
+const CONFIG = {
+  relayUrl: 'wss://qsp-raley.afghanbadboy619.workers.dev',
+  iceServers: [
+    { urls: ['stun:stun.l.google.com:19302', 'stun:stun1.l.google.com:19302'] },
+    { urls: 'stun:stun.cloudflare.com:3478' },
+    // TURN is a last resort: ICE prefers direct paths and only uses it when nothing else works.
+    {
+      urls: ['turn:free.expressturn.com:3478', 'turns:free.expressturn.com:443?transport=tcp'],
+      username: '000000002109243825',
+      credential: 'BtkQ4PoigKOZ1Axm6r049tfemR0='
+    }
+  ],
+  maxTextBytes: 15000,
+  relayChunkBytes: 2800,
+  chunkSize: 256 * 1024,                   // bytes per data-channel message (Chrome's max is 256 KB)
+  readBlock: 8 * 1024 * 1024,              // bytes read from disk at once by the sender (next block is prefetched)
+  bufferHigh: 12 * 1024 * 1024,            // pause sending when the channel buffer exceeds this
+  bufferLow: 4 * 1024 * 1024,              // resume when it falls below this (keeps the pipe full)
+  window: 48 * 1024 * 1024,                // max un-acknowledged bytes in flight
+  ackEvery: 4 * 1024 * 1024,               // receiver acknowledges every N written bytes
+  writeBatch: 2 * 1024 * 1024,             // receiver merges chunks into blocks this big before writing to disk
+  negotiationTimeoutMs: 20000,
+  memoryWarnBytes: 1.5 * 1024 ** 3
+};
+
+/* ============================== 2. UTILS ============================== */
+const $ = (sel, root = document) => root.querySelector(sel);
+const enc = new TextEncoder();
+const byteLen = s => enc.encode(s).length;
+
+function uid(n = 8) {
+  const a = new Uint8Array(n); crypto.getRandomValues(a);
+  return Array.from(a, b => 'abcdefghijklmnopqrstuvwxyz0123456789'[b % 36]).join('');
+}
+function fmtBytes(n) {
+  const u = ['B', 'KB', 'MB', 'GB', 'TB']; let i = 0;
+  while (n >= 1024 && i < u.length - 1) { n /= 1024; i++; }
+  return (i === 0 ? n.toFixed(0) : n.toFixed(n >= 100 ? 0 : 1)) + ' ' + u[i];
+}
+const fmtSpeed = bps => (bps / 1048576).toFixed(2) + ' MB/s';
+
+function truncateToBytes(str, max) {
+  if (byteLen(str) <= max) return str;
+  let out = '', n = 0;
+  for (const ch of str) { const b = byteLen(ch); if (n + b > max) break; out += ch; n += b; }
+  return out;
+}
+function splitByBytes(str, max) {
+  const parts = []; let cur = '', n = 0;
+  for (const ch of str) {
+    const b = byteLen(ch);
+    if (n + b > max) { parts.push(cur); cur = ''; n = 0; }
+    cur += ch; n += b;
+  }
+  parts.push(cur);
+  return parts;
+}
+
+class Emitter {
+  constructor() { this._h = new Map(); }
+  on(ev, fn) { if (!this._h.has(ev)) this._h.set(ev, []); this._h.get(ev).push(fn); return this; }
+  emit(ev, ...args) {
+    for (const fn of (this._h.get(ev) || [])) { try { fn(...args); } catch (e) { console.error(e); } }
+  }
+}
+
+let toastTimer;
+function toast(msg) {
+  const t = $('#toast'); t.textContent = msg; t.classList.add('show');
+  clearTimeout(toastTimer); toastTimer = setTimeout(() => t.classList.remove('show'), 2200);
+}
+async function copyText(text) {
+  try { await navigator.clipboard.writeText(text); }
+  catch (e) {
+    const ta = document.createElement('textarea'); ta.value = text; ta.style.cssText = 'position:fixed;opacity:0';
+    document.body.appendChild(ta); ta.select(); try { document.execCommand('copy'); } catch (_) {} ta.remove();
+  }
+  toast('Copied ✓');
+}
+
+/* ============================== 3. RELAY ============================== */
+class Relay extends Emitter {
+  constructor() {
+    super();
+    this.room = null; this.ws = null; this.retry = null; this.ping = null;
+    this.online = false; this.fails = 0;
+  }
+  join(room) { this.leave(); this.room = room; this.fails = 0; this._open(); }
+  leave() {
+    clearTimeout(this.retry); clearInterval(this.ping);
+    if (this.ws) {
+      const w = this.ws; this.ws = null;
+      w.onopen = w.onmessage = w.onerror = w.onclose = null;
+      try { w.close(); } catch (e) { /* ignore */ }
+    }
+    this.online = false;
+  }
+  _open() {
+    const base = String(CONFIG.relayUrl || '');
+    if (!/^wss?:\/\//.test(base) || base.includes('YOUR-WORKER')) {
+      this.emit('status', 'offline');
+      this.emit('pub-error', 'relay URL is not set (CONFIG.relayUrl)');
+      return;
+    }
+    this.emit('status', 'connecting');
+    let ws;
+    try { ws = new WebSocket(`${base.replace(/\/+$/, '')}/room/${this.room}`); }
+    catch (e) { this.retry = setTimeout(() => this._open(), 3000); return; }
+    this.ws = ws;
+    ws.onopen = () => {
+      this.fails = 0; this.online = true; this.emit('status', 'online');
+      clearInterval(this.ping);
+      this.ping = setInterval(() => { try { ws.send('ping'); } catch (e) { /* ignore */ } }, 25000);
+    };
+    ws.onmessage = e => {
+      if (typeof e.data !== 'string' || e.data === 'pong') return;
+      try { this.emit('message', JSON.parse(e.data)); } catch (err) { /* ignore malformed */ }
+    };
+    ws.onclose = () => {
+      if (this.ws !== ws) return;
+      this.online = false; clearInterval(this.ping); this.emit('status', 'offline');
+      this.retry = setTimeout(() => this._open(), Math.min(15000, 1000 + this.fails++ * 1500));
+    };
+    ws.onerror = () => { /* onclose handles the retry */ };
+  }
+  async publish(obj) {
+    const ws = this.ws;
+    if (!ws || ws.readyState !== 1) { this.emit('pub-error', 'not connected to the relay'); throw new Error('relay offline'); }
+    ws.send(JSON.stringify(obj));
+  }
+}
+
+/* ============================ 4. PEER LINK ============================ */
+class PeerLink extends Emitter {
+  constructor(relay, selfId) {
+    super();
+    this.relay = relay; this.selfId = selfId;
+    this.state = 'idle';
+    this.pc = null; this.text = null; this.file = null;
+    this.remoteId = null; this.ses = null; this.remoteSet = false;
+    this.pendingIce = []; this.earlyIce = []; this.iceOut = [];
+    this.helloTimer = null; this.helloCount = 0; this.failCount = 0;
+    this.negTimer = null; this.discTimer = null; this.iceTimer = null;
+    relay.on('message', m => this._onSignal(m));
+    relay.on('status', s => { if (s === 'online') this.announce(); });
+  }
+  get isOpen() {
+    return !!(this.state === 'connected' && this.text && this.file &&
+      this.text.readyState === 'open' && this.file.readyState === 'open');
+  }
+  get maxMessageSize() { return this.pc && this.pc.sctp ? this.pc.sctp.maxMessageSize : 0; }
+  _setState(s) { if (this.state !== s) { this.state = s; this.emit('state', s); } }
+
+  sendText(obj) { if (this.text && this.text.readyState === 'open') this.text.send(JSON.stringify(obj)); }
+  sendFileCtrl(obj) { if (this.file && this.file.readyState === 'open') this.file.send(JSON.stringify(obj)); }
+
+  announce() {
+    clearTimeout(this.helloTimer);
+    if (this.state !== 'idle' || !this.relay.online) return;
+    this._sendSig({ t: 'hello' });
+    const delay = Math.min(20000, 3000 + this.helloCount++ * 2000);
+    this.helloTimer = setTimeout(() => this.announce(), delay);
+  }
+  bye() {
+    if (this.remoteId) {
+      this.relay.publish({ k: 'sig', t: 'bye', from: this.selfId, to: this.remoteId }).catch(() => {});
+    }
+  }
+  reset() {
+    this._teardown('reset', false, true);
+    this.helloCount = 0; this.failCount = 0;
+  }
+
+  _sendSig(obj) { this.relay.publish({ k: 'sig', from: this.selfId, ...obj }).catch(() => {}); }
+  _onSignal(m) {
+    if (m.k !== 'sig' || m.from === this.selfId) return;
+    if (m.to && m.to !== this.selfId) return;
+    switch (m.t) {
+      case 'hello': this._onHello(m); break;
+      case 'offer': this._onOffer(m); break;
+      case 'answer': this._onAnswer(m); break;
+      case 'ice': this._onIce(m); break;
+      case 'bye': if (m.from === this.remoteId) this._teardown('peer left'); break;
+    }
+  }
+  _onHello(m) {
+    if (this.state !== 'idle') return;
+    if (!m.re) this._sendSig({ t: 'hello', re: true, to: m.from });
+    if (this.selfId < m.from) this._startOffer(m.from);
+  }
+  async _startOffer(remoteId) {
+    this._setState('negotiating');
+    this.remoteId = remoteId; this.ses = uid(6);
+    this._createPc(); this._armNegTimer();
+    const pc = this.pc;
+    try {
+      await pc.setLocalDescription(await pc.createOffer());
+      if (this.pc !== pc) return;
+      this._sendSig({ t: 'offer', to: remoteId, ses: this.ses, sdp: pc.localDescription.sdp });
+    } catch (e) { if (this.pc === pc) this._teardown('offer failed', true); }
+  }
+  async _onOffer(m) {
+    if (this.state !== 'idle') return;
+    this._setState('negotiating');
+    this.remoteId = m.from; this.ses = m.ses;
+    for (const e of this.earlyIce) if (e.ses === m.ses) this.pendingIce.push(...e.c);
+    this.earlyIce = [];
+    this._createPc(); this._armNegTimer();
+    const pc = this.pc;
+    try {
+      await pc.setRemoteDescription({ type: 'offer', sdp: m.sdp });
+      this._flushIce();
+      await pc.setLocalDescription(await pc.createAnswer());
+      if (this.pc !== pc) return;
+      this._sendSig({ t: 'answer', to: m.from, ses: m.ses, sdp: pc.localDescription.sdp });
+    } catch (e) { if (this.pc === pc) this._teardown('answer failed', true); }
+  }
+  async _onAnswer(m) {
+    if (!this.pc || m.ses !== this.ses || this.pc.signalingState !== 'have-local-offer') return;
+    const pc = this.pc;
+    try { await pc.setRemoteDescription({ type: 'answer', sdp: m.sdp }); this._flushIce(); }
+    catch (e) { if (this.pc === pc) this._teardown('answer rejected', true); }
+  }
+  _onIce(m) {
+    if (!this.pc || m.ses !== this.ses) {
+      if (this.earlyIce.length < 40) this.earlyIce.push({ ses: m.ses, c: m.c });
+      return;
+    }
+    for (const c of m.c) {
+      if (this.remoteSet) this.pc.addIceCandidate(c).catch(() => {});
+      else this.pendingIce.push(c);
+    }
+  }
+  _flushIce() {
+    this.remoteSet = true;
+    for (const c of this.pendingIce.splice(0)) this.pc.addIceCandidate(c).catch(() => {});
+  }
+  _queueIce(c) {
+    this.iceOut.push(c);
+    if (this.iceTimer) return;
+    this.iceTimer = setTimeout(() => {
+      this.iceTimer = null;
+      const list = this.iceOut.splice(0);
+      for (let i = 0; i < list.length && this.remoteId; i += 8) {
+        this._sendSig({ t: 'ice', to: this.remoteId, ses: this.ses, c: list.slice(i, i + 8) });
+      }
+    }, 150);
+  }
+  _armNegTimer() {
+    clearTimeout(this.negTimer);
+    this.negTimer = setTimeout(() => { if (this.state === 'negotiating') this._teardown('negotiation timeout', true); }, CONFIG.negotiationTimeoutMs);
+  }
+
+  _createPc() {
+    const pc = new RTCPeerConnection({ iceServers: CONFIG.iceServers });
+    this.pc = pc; this.remoteSet = false; this.pendingIce = []; this.iceOut = [];
+    pc.onicecandidate = e => { if (e.candidate) this._queueIce(e.candidate.toJSON()); };
+    pc.onconnectionstatechange = () => {
+      const s = pc.connectionState;
+      if (s === 'failed') this._teardown('connection failed', true);
+      else if (s === 'disconnected') {
+        clearTimeout(this.discTimer);
+        this.discTimer = setTimeout(() => { if (this.pc === pc && pc.connectionState === 'disconnected') this._teardown('connection lost', true); }, 6000);
+      } else clearTimeout(this.discTimer);
+    };
+    this.text = pc.createDataChannel('text', { negotiated: true, id: 0 });
+    this.file = pc.createDataChannel('file', { negotiated: true, id: 1 });
+    this.file.binaryType = 'arraybuffer';
+    this.file.bufferedAmountLowThreshold = CONFIG.bufferLow;
+    this.text.onmessage = e => this.emit('text-message', e.data);
+    this.file.onmessage = e => this.emit('file-message', e.data);
+    const check = () => {
+      if (this.state !== 'connected' && this.text.readyState === 'open' && this.file.readyState === 'open') {
+        clearTimeout(this.negTimer); clearTimeout(this.helloTimer);
+        this.failCount = 0; this.helloCount = 0;
+        this._setState('connected');
+        this.emit('open');
+        setTimeout(() => this._detectRoute(), 800);
+      }
+    };
+    for (const ch of [this.text, this.file]) {
+      ch.onopen = check;
+      ch.onclose = () => { if (this.state === 'connected') this._teardown('channel closed'); };
+    }
+  }
+  async _detectRoute() {
+    try {
+      const pc = this.pc; if (!pc) return;
+      const stats = await pc.getStats(); let pair = null;
+      stats.forEach(r => { if (r.type === 'transport' && r.selectedCandidatePairId) pair = stats.get(r.selectedCandidatePairId); });
+      if (!pair) stats.forEach(r => { if (r.type === 'candidate-pair' && r.nominated && r.state === 'succeeded') pair = r; });
+      const local = pair && stats.get(pair.localCandidateId);
+      const remote = pair && stats.get(pair.remoteCandidateId);
+      if (local) this.emit('route', (local.candidateType === 'relay' || (remote && remote.candidateType === 'relay')) ? 'relay' : local.candidateType);
+    } catch (e) { /* stats not available */ }
+  }
+
+  _teardown(reason, failed = false, silent = false) {
+    const wasConnected = this.state === 'connected';
+    clearTimeout(this.negTimer); clearTimeout(this.discTimer); clearTimeout(this.iceTimer); clearTimeout(this.helloTimer);
+    this.iceTimer = null;
+    const pc = this.pc;
+    if (pc) {
+      pc.onicecandidate = null; pc.onconnectionstatechange = null;
+      for (const ch of [this.text, this.file]) if (ch) { ch.onopen = null; ch.onclose = null; ch.onmessage = null; }
+      try { pc.close(); } catch (e) { /* ignore */ }
+    }
+    this.pc = this.text = this.file = null;
+    this.remoteId = null; this.ses = null; this.remoteSet = false;
+    this.pendingIce = []; this.iceOut = [];
+    this._setState('idle');
+    if (wasConnected) this.emit('close', reason);
+    if (failed) { this.failCount++; this.emit('fail', this.failCount); }
+    if (!silent) this.helloTimer = setTimeout(() => this.announce(), 1000 + this.failCount * 1500);
+  }
+}
+
+/* ============================== 5. METER ============================== */
+/** Counts bytes and computes smoothed speeds. Upload speed counts only bytes that actually left
+ *  the send buffer (sent minus still-queued), so it shows the real network rate. */
+class Meter extends Emitter {
+  constructor() {
+    super();
+    this.totalUp = 0; this.totalDown = 0; this.speedUp = 0; this.speedDown = 0;
+    this.pending = () => 0;
+    this._lu = 0; this._ld = 0; this._t = performance.now();
+    setInterval(() => this._tick(), 500);
+  }
+  addUp(n) { this.totalUp += n; }
+  addDown(n) { this.totalDown += n; }
+  get onWire() { return Math.max(0, this.totalUp - this.pending()); }
+  _tick() {
+    const now = performance.now(), dt = (now - this._t) / 1000; this._t = now;
+    const up = this.onWire;
+    const su = Math.max(0, (up - this._lu) / dt), sd = Math.max(0, (this.totalDown - this._ld) / dt);
+    this._lu = up; this._ld = this.totalDown;
+    this.speedUp = this.speedUp * 0.4 + su * 0.6;
+    this.speedDown = this.speedDown * 0.4 + sd * 0.6;
+    if (this.speedUp < 1) this.speedUp = 0;
+    if (this.speedDown < 1) this.speedDown = 0;
+    this.emit('tick');
+  }
+}
+
+/* ============================== 6. SINKS ============================== */
+class FsAccessSink {
+  static supported() { return 'showSaveFilePicker' in window; }
+  async open(name) {
+    const handle = await window.showSaveFilePicker({ suggestedName: name });
+    this.w = await handle.createWritable();
+  }
+  write(buf) { return this.w.write(buf); }
+  async close() { await this.w.close(); return null; }
+  async abort() { try { await this.w.abort(); } catch (e) { /* ignore */ } }
+}
+class OpfsSink {
+  static supported() {
+    return !!(navigator.storage && navigator.storage.getDirectory &&
+      window.FileSystemFileHandle && FileSystemFileHandle.prototype.createWritable);
+  }
+  static async purge() {
+    try {
+      const root = await navigator.storage.getDirectory();
+      for await (const [name] of root.entries()) if (name.startsWith('qsp-')) await root.removeEntry(name).catch(() => {});
+    } catch (e) { /* ignore */ }
+  }
+  async open(name) {
+    this.root = await navigator.storage.getDirectory();
+    this.fname = 'qsp-' + Date.now() + '-' + uid(4);
+    this.h = await this.root.getFileHandle(this.fname, { create: true });
+    this.w = await this.h.createWritable();
+  }
+  write(buf) { return this.w.write(buf); }
+  async close() { await this.w.close(); return await this.h.getFile(); }
+  async abort() {
+    try { await this.w.abort(); } catch (e) { /* ignore */ }
+    try { await this.root.removeEntry(this.fname); } catch (e) { /* ignore */ }
+  }
+}
+class MemorySink {
+  constructor() { this.chunks = []; }
+  async open() {}
+  async write(buf) { this.chunks.push(buf); }
+  async close() { return new Blob(this.chunks); }
+  async abort() { this.chunks = []; }
+}
+function createSink() {
+  if (FsAccessSink.supported()) return new FsAccessSink();
+  if (OpfsSink.supported()) return new OpfsSink();
+  return new MemorySink();
+}
+
+/* ============================= 7. TEXT SYNC (CHAT) ============================= */
+class TextSync {
+  constructor({ link, relay, selfId, els }) {
+    this.link = link; this.relay = relay; this.selfId = selfId; this.els = els;
+    this.msgs = [];
+    this.seen = new Set();
+    this.pending = new Map();
+    this.maxHistory = 300;
+    this.lastTypingSent = 0; this.idleTimer = null; this.peerTypingTimer = null;
+    this.touch = window.matchMedia('(pointer: coarse)').matches;
+
+    els.send.addEventListener('click', () => this.send());
+    els.input.addEventListener('input', () => this._onInput());
+    els.input.addEventListener('keydown', e => {
+      if (e.key === 'Enter' && !e.shiftKey && !e.isComposing && !this.touch) { e.preventDefault(); this.send(); }
+    });
+    els.clear.addEventListener('click', () => this.clear());
+    els.log.addEventListener('scroll', () => { if (this._nearBottom()) els.jump.hidden = true; });
+    els.jump.addEventListener('click', () => this._scrollBottom());
+
+    link.on('text-message', d => this._onChannel(d));
+    link.on('open', () => this._badge());
+    link.on('close', () => { this._setPeerTyping(false); this._badge(); });
+    relay.on('message', m => this._onRelay(m));
+
+    this._renderEmpty(); this._updateCount(); this._badge();
+  }
+  reset() {
+    this.seen.clear(); this.pending.clear(); this._wipe();
+    this.els.input.value = ''; this._autosize(); this._updateCount();
+  }
+
+  send() {
+    const text = this.els.input.value.replace(/\s+$/, '');
+    if (!text.trim()) return;
+    const msg = { id: uid(10), from: this.selfId, v: truncateToBytes(text, CONFIG.maxTextBytes), ts: Date.now() };
+    this._add(msg);
+    this.els.input.value = ''; this._autosize(); this._updateCount();
+    this._sendTyping(false);
+    if (this.link.isOpen) this.link.sendText({ t: 'chat', id: msg.id, from: msg.from, v: msg.v, ts: msg.ts });
+    else this._relaySend(msg).catch(() => toast('Message not delivered — check your connection'));
+    this.els.input.focus();
+  }
+  clear() {
+    const id = uid(8);
+    this.seen.add(id); this._wipe();
+    if (this.link.isOpen) this.link.sendText({ t: 'clear', id, from: this.selfId });
+    else this.relay.publish({ k: 'chatclear', id, from: this.selfId }).catch(() => {});
+    this.els.input.focus();
+  }
+  async _relaySend(msg) {
+    const parts = splitByBytes(msg.v, CONFIG.relayChunkBytes);
+    for (let i = 0; i < parts.length; i++) {
+      await this.relay.publish({ k: 'chat', id: msg.id, from: msg.from, ts: msg.ts, i, n: parts.length, d: parts[i] });
+    }
+  }
+
+  _onInput() {
+    const a = this.els.input, t = truncateToBytes(a.value, CONFIG.maxTextBytes);
+    if (t !== a.value) { a.value = t; toast('Message limit reached (15,000 bytes)'); }
+    this._autosize(); this._updateCount();
+    clearTimeout(this.idleTimer);
+    if (!a.value) { this._sendTyping(false); return; }
+    if (Date.now() - this.lastTypingSent > 2000) this._sendTyping(true);
+    this.idleTimer = setTimeout(() => this._sendTyping(false), 2500);
+  }
+  _sendTyping(on) {
+    this.lastTypingSent = on ? Date.now() : 0;
+    if (!on) clearTimeout(this.idleTimer);
+    this.link.sendText({ t: 'typing', on, from: this.selfId });
+  }
+  _setPeerTyping(on) {
+    clearTimeout(this.peerTypingTimer);
+    this.els.typing.classList.toggle('show', on);
+    if (on) this.peerTypingTimer = setTimeout(() => this.els.typing.classList.remove('show'), 4000);
+  }
+
+  _onChannel(d) {
+    let m; try { m = JSON.parse(d); } catch (e) { return; }
+    if (m.t === 'chat') { this._setPeerTyping(false); this._add({ id: m.id, from: m.from, v: truncateToBytes(String(m.v || ''), CONFIG.maxTextBytes), ts: m.ts }); }
+    else if (m.t === 'typing') this._setPeerTyping(!!m.on);
+    else if (m.t === 'clear') this._onClear(m.id);
+  }
+  _onRelay(m) {
+    if (m.from === this.selfId) return;
+    if (m.k === 'chatclear') { this._onClear(m.id); return; }
+    if (m.k !== 'chat') return;
+    const e = this.pending.get(m.id) || { n: m.n, parts: [], got: 0 };
+    if (e.parts[m.i] === undefined) { e.parts[m.i] = m.d; e.got++; }
+    this.pending.set(m.id, e);
+    if (e.got === e.n) {
+      this.pending.delete(m.id);
+      this._add({ id: m.id, from: m.from, v: truncateToBytes(e.parts.join(''), CONFIG.maxTextBytes), ts: m.ts });
+    }
+  }
+  _onClear(id) {
+    if (this.seen.has(id)) return;
+    this.seen.add(id); this._wipe();
+    toast('Chat cleared by the other device');
+  }
+
+  _add(msg) {
+    if (this.seen.has(msg.id)) return;
+    this.seen.add(msg.id);
+    const mine = msg.from === this.selfId;
+    const stick = mine || this._nearBottom();
+    const log = this.els.log;
+    const empty = log.querySelector('.chat-empty'); if (empty) empty.remove();
+
+    const el = document.createElement('div'); el.className = 'bubble ' + (mine ? 'me' : 'peer');
+    const body = document.createElement('div'); body.className = 'body'; body.dir = 'auto'; body.textContent = msg.v;
+    const foot = document.createElement('div'); foot.className = 'foot';
+    const time = document.createElement('span');
+    time.textContent = new Date(msg.ts || Date.now()).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+    const cp = document.createElement('button'); cp.className = 'cp'; cp.textContent = 'Copy';
+    cp.addEventListener('click', () => copyText(msg.v));
+    foot.append(cp, time); el.append(body, foot);
+    log.appendChild(el);
+    msg.el = el; this.msgs.push(msg);
+
+    if (this.msgs.length > this.maxHistory) { const old = this.msgs.shift(); if (old.el) old.el.remove(); }
+    if (stick) this._scrollBottom(); else this.els.jump.hidden = false;
+  }
+  _wipe() {
+    this.msgs = []; this.els.log.innerHTML = ''; this.els.jump.hidden = true;
+    this._setPeerTyping(false); this._renderEmpty();
+  }
+  _renderEmpty() {
+    if (this.els.log.querySelector('.bubble') || this.els.log.querySelector('.chat-empty')) return;
+    const d = document.createElement('div'); d.className = 'chat-empty';
+    d.textContent = 'No messages yet. Say hello 👋'; this.els.log.appendChild(d);
+  }
+  _nearBottom() { const l = this.els.log; return l.scrollHeight - l.scrollTop - l.clientHeight < 80; }
+  _scrollBottom() {
+    const l = this.els.log;
+    requestAnimationFrame(() => l.scrollTo({ top: l.scrollHeight, behavior: 'smooth' }));
+    this.els.jump.hidden = true;
+  }
+  _autosize() { const a = this.els.input; a.style.height = 'auto'; a.style.height = Math.min(a.scrollHeight, 140) + 'px'; }
+  _updateCount() {
+    const n = byteLen(this.els.input.value);
+    this.els.count.textContent = `${n} / ${CONFIG.maxTextBytes} bytes`;
+    this.els.count.classList.toggle('bad', n >= CONFIG.maxTextBytes);
+  }
+  _badge() {
+    const on = this.link.isOpen, b = this.els.badge;
+    b.textContent = on ? 'Live · P2P connected' : 'Waiting for peer… (relay fallback)';
+    b.classList.toggle('live', on);
+  }
+}
+
+/* =========================== 8. FILE TRANSFER =========================== */
+/**
+ * Chunked P2P file transfer over the "file" data channel.
+ * Speed notes:
+ *  - no per-byte checksum in JS (SCTP/DTLS already guarantee integrity) — this was a big CPU cost
+ *  - sender prefetches the next disk block while the current one is being sent
+ *  - receiver merges small chunks into ~2 MB blocks before writing to disk
+ *  - large send buffer + large ack window keep the pipe full on fast links
+ *
+ * Wire protocol (JSON strings; raw ArrayBuffers are file data):
+ *   offer{id,name,size,mime}  accept{id,offset}  reject{id}
+ *   ack{id,n}  state{id,paused}  end{id}  done{id}  cancel{id}  resume-req{id,offset,paused}
+ */
+class FileTransfer extends Emitter {
+  constructor(link, meter) {
+    super();
+    this.link = link; this.meter = meter;
+    this.items = new Map(); this.activeIn = null;
+    this.wl = null; this.wlBusy = false;
+    this.on('update', () => this._syncWake());
+    document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') this._syncWake(); });
+    link.on('open', () => this._onOpen());
+    link.on('close', () => this._onClose());
+    link.on('file-message', d => this._onMessage(d));
+  }
+
+  addFiles(fileList) {
+    if (!this.link.isOpen) { toast('Connect to a peer first'); return; }
+    for (const f of fileList) {
+      const it = { id: uid(10), dir: 'out', name: f.name, size: f.size, mime: f.type, state: 'queued',
+        file: f, offset: 0, acked: 0, paused: false, runId: 0, wake: null };
+      this.items.set(it.id, it); this.emit('update', it);
+    }
+    this._pump();
+  }
+  async accept(id) {
+    const it = this.items.get(id);
+    if (!it || it.dir !== 'in' || it.state !== 'offered') return;
+    const sink = createSink();
+    if (sink instanceof MemorySink && it.size > CONFIG.memoryWarnBytes &&
+        !confirm('This browser must keep the whole file in memory. Large files may crash the tab. Continue?')) return;
+    try { await sink.open(it.name, it.size); }
+    catch (e) { if (e.name !== 'AbortError') toast('Cannot save file: ' + (e.message || e.name)); return; }
+    it.sink = sink; it.state = 'receiving';
+    it.received = 0; it.written = 0; it.lastAck = 0; it.chain = Promise.resolve(); it.dead = false;
+    it.batch = []; it.batchBytes = 0;
+    this.activeIn = it;
+    this._ctrl({ t: 'accept', id, offset: 0 });
+    this.emit('update', it);
+  }
+  decline(id) {
+    const it = this.items.get(id); if (!it || it.state !== 'offered') return;
+    this._ctrl({ t: 'reject', id }); it.state = 'declined'; this.emit('update', it);
+  }
+  setPaused(id, paused) {
+    const it = this.items.get(id);
+    if (!it || !['sending', 'receiving'].includes(it.state)) return;
+    it.paused = paused; this._ctrl({ t: 'state', id, paused }); this._wake(it); this.emit('update', it);
+  }
+  cancel(id) {
+    const it = this.items.get(id); if (!it) return;
+    this._ctrl({ t: 'cancel', id }); this._kill(it, 'cancelled'); this._pump();
+  }
+  save(id) {
+    const it = this.items.get(id); if (!it || !it.result) return;
+    const url = URL.createObjectURL(it.result);
+    const a = document.createElement('a'); a.href = url; a.download = it.name;
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 5 * 60 * 1000);
+  }
+  progressBytes(it) {
+    if (it.state === 'done') return it.size;
+    if (it.dir === 'in') return it.received || 0;
+    const buffered = this.link.file ? this.link.file.bufferedAmount : 0;
+    return Math.max(it.acked, it.offset - buffered);
+  }
+  reset() {
+    for (const it of this.items.values()) {
+      if (['sending', 'receiving', 'offered', 'finishing'].includes(it.state)) this._ctrl({ t: 'cancel', id: it.id });
+      this._kill(it, 'cancelled', true);
+    }
+    this.items.clear(); this.activeIn = null; this.emit('reset');
+  }
+
+  _ctrl(obj) { try { this.link.sendFileCtrl(obj); } catch (e) { /* channel closing */ } }
+  _wake(it) { const w = it.wake; it.wake = null; if (w) w(); }
+  _touch(it) {
+    const now = performance.now();
+    if (now - (it._ui || 0) < 150) return;
+    it._ui = now; this.emit('update', it);
+  }
+  _kill(it, state, quiet = false) {
+    it.state = state; it.dead = true; it.runId++;
+    it.batch = []; it.batchBytes = 0;
+    if (it.sink) { it.sink.abort(); it.sink = null; }
+    if (this.activeIn === it) this.activeIn = null;
+    this._wake(it); if (!quiet) this.emit('update', it);
+  }
+  _fail(it, msg) {
+    if (it.dead) return;
+    this._ctrl({ t: 'cancel', id: it.id });
+    it.error = msg; this._kill(it, 'error'); this._pump();
+  }
+  _pump() {
+    if (!this.link.isOpen) return;
+    const all = [...this.items.values()].filter(i => i.dir === 'out');
+    if (all.some(i => ['offered', 'sending', 'finishing', 'interrupted'].includes(i.state))) return;
+    const next = all.find(i => i.state === 'queued'); if (!next) return;
+    next.state = 'offered';
+    this._ctrl({ t: 'offer', id: next.id, name: next.name, size: next.size, mime: next.mime });
+    this.emit('update', next);
+  }
+
+  _onOpen() {
+    for (const it of this.items.values()) {
+      if (it.dir === 'in' && it.state === 'interrupted') {
+        (async () => {
+          await it.chain;
+          if (it.dead) return;
+          it.state = 'receiving'; it.lastAck = it.written; this.activeIn = it;
+          this._ctrl({ t: 'resume-req', id: it.id, offset: it.received, paused: it.paused });
+          this.emit('update', it);
+        })();
+      } else if (it.dir === 'out' && it.state === 'interrupted' && it.offset >= it.size) {
+        this._ctrl({ t: 'end', id: it.id });
+      }
+    }
+    this._pump();
+  }
+  _onClose() {
+    for (const it of [...this.items.values()]) {
+      if (it.dir === 'out') {
+        if (['sending', 'finishing'].includes(it.state)) { it.state = 'interrupted'; it.runId++; this._wake(it); }
+        else if (it.state === 'offered') it.state = 'queued';
+      } else {
+        if (it.state === 'receiving') it.state = 'interrupted';
+        else if (it.state === 'offered') it.state = 'cancelled';
+      }
+      this.emit('update', it);
+    }
+    this.activeIn = null;
+  }
+
+  _onMessage(data) {
+    if (typeof data !== 'string') return this._onChunk(data);
+    let m; try { m = JSON.parse(data); } catch (e) { return; }
+    const it = this.items.get(m.id);
+    switch (m.t) {
+      case 'offer': return this._onOffer(m);
+      case 'accept': if (it && it.dir === 'out' && it.state === 'offered') { it.state = 'sending'; it.offset = it.acked = m.offset || 0; this.emit('update', it); this._run(it); } break;
+      case 'reject': if (it) { it.state = 'rejected'; this.emit('update', it); this._pump(); } break;
+      case 'ack': if (it) { it.acked = Math.max(it.acked, m.n); this._wake(it); this._touch(it); } break;
+      case 'state': if (it) { it.paused = !!m.paused; this._wake(it); this.emit('update', it); } break;
+      case 'end': return this._onEnd(it);
+      case 'done': if (it && it.dir === 'out') { it.state = 'done'; it.acked = it.size; this.emit('update', it); this._pump(); } break;
+      case 'cancel': if (it && !it.dead) { this._kill(it, 'cancelled'); this._pump(); } break;
+      case 'resume-req':
+        if (it && it.dir === 'out' && ['interrupted', 'sending', 'finishing'].includes(it.state)) {
+          it.offset = it.acked = m.offset; it.paused = !!m.paused; it.state = 'sending';
+          this.emit('update', it); this._run(it);
+        }
+        break;
+    }
+  }
+
+  /* ---- receiving ---- */
+  _onOffer(m) {
+    const it = { id: m.id, dir: 'in', name: m.name, size: m.size, mime: m.mime, state: 'offered',
+      received: 0, written: 0, lastAck: 0, paused: false, dead: false, batch: [], batchBytes: 0 };
+    this.items.set(it.id, it); this.emit('update', it);
+    toast('Incoming file: ' + m.name);
+  }
+  _onChunk(buf) {
+    const it = this.activeIn;
+    if (!it || it.state !== 'receiving') return;
+    const n = buf.byteLength;
+    it.received += n; this.meter.addDown(n);
+    if (it.received > it.size) { this._fail(it, 'Received more data than expected'); return; }
+    it.batch.push(buf); it.batchBytes += n;
+    if (it.batchBytes >= CONFIG.writeBatch || it.received >= it.size) this._flush(it);
+    else this._touch(it);
+  }
+  /** Write the collected chunks as one block; writes are chained so they hit the disk in order. */
+  _flush(it) {
+    if (it.dead || !it.batch.length) return;
+    const parts = it.batch, bytes = it.batchBytes;
+    it.batch = []; it.batchBytes = 0;
+    const data = parts.length === 1 ? parts[0] : new Blob(parts);
+    it.chain = it.chain.then(async () => {
+      if (it.dead) return;
+      await it.sink.write(data);
+      it.written += bytes;
+      if (it.written - it.lastAck >= CONFIG.ackEvery) { it.lastAck = it.written; this._ctrl({ t: 'ack', id: it.id, n: it.written }); }
+      this._touch(it);
+    }).catch(err => this._fail(it, err.message || 'Write failed'));
+  }
+  async _onEnd(it) {
+    if (!it || it.dir !== 'in') return;
+    if (it.state === 'done') { this._ctrl({ t: 'done', id: it.id }); return; }
+    this._flush(it);
+    await it.chain;
+    if (it.dead) return;
+    if (it.written !== it.size) { this._fail(it, 'Size mismatch'); return; }
+    try { it.result = await it.sink.close(); it.sink = null; }
+    catch (e) { this._fail(it, e.message || 'Could not finalize file'); return; }
+    it.state = 'done'; this.activeIn = null;
+    this._ctrl({ t: 'done', id: it.id });
+    this.emit('update', it);
+    toast('Received: ' + it.name);
+  }
+
+  /* ---- sending ---- */
+  async _gate(it, alive) {
+    while (alive() && (it.paused || it.offset - it.acked > CONFIG.window)) {
+      await new Promise(r => { it.wake = r; });
+    }
+  }
+  _drain() {
+    const ch = this.link.file;
+    if (!ch || ch.bufferedAmount <= CONFIG.bufferHigh) return Promise.resolve();
+    ch.bufferedAmountLowThreshold = CONFIG.bufferLow;
+    return new Promise(res => {
+      const done = () => { ch.removeEventListener('bufferedamountlow', done); ch.removeEventListener('close', done); res(); };
+      ch.addEventListener('bufferedamountlow', done); ch.addEventListener('close', done);
+    });
+  }
+  _syncWake() {
+    if (!('wakeLock' in navigator)) return;
+    const active = [...this.items.values()].some(i => ['sending', 'receiving', 'finishing'].includes(i.state));
+    if (active && !this.wl && !this.wlBusy && document.visibilityState === 'visible') {
+      this.wlBusy = true;
+      navigator.wakeLock.request('screen').then(l => {
+        this.wl = l; l.addEventListener('release', () => { if (this.wl === l) this.wl = null; });
+      }).catch(() => {}).finally(() => { this.wlBusy = false; });
+    } else if (!active && this.wl) {
+      const l = this.wl; this.wl = null; l.release().catch(() => {});
+    }
+  }
+  async _run(it) {
+    const run = ++it.runId;
+    const alive = () => it.runId === run && it.state === 'sending' && this.link.isOpen;
+    const max = this.link.maxMessageSize;
+    const chunk = (max && isFinite(max)) ? Math.min(CONFIG.chunkSize, max) : CONFIG.chunkSize;
+    const readBlock = start => {                                   // read one block from disk
+      const p = it.file.slice(start, Math.min(start + CONFIG.readBlock, it.size)).arrayBuffer();
+      p.catch(() => {});
+      return p;
+    };
+    try {
+      let blockStart = it.offset;
+      let next = blockStart < it.size ? readBlock(blockStart) : null;
+      while (alive() && next) {
+        const buf = await next;
+        const nextStart = blockStart + buf.byteLength;
+        next = nextStart < it.size ? readBlock(nextStart) : null;  // prefetch the next block while this one is sent
+        let pos = 0;
+        while (pos < buf.byteLength) {
+          if (it.paused || it.offset - it.acked > CONFIG.window) { await this._gate(it, alive); }
+          if (!alive()) return;
+          const ch = this.link.file;
+          if (ch.bufferedAmount > CONFIG.bufferHigh) { await this._drain(); }
+          if (!alive()) return;
+          const n = Math.min(chunk, buf.byteLength - pos);
+          this.link.file.send(new Uint8Array(buf, pos, n));
+          pos += n; it.offset += n; this.meter.addUp(n); this._touch(it);
+        }
+        blockStart = nextStart;
+      }
+      if (alive()) {
+        it.state = 'finishing';
+        this._ctrl({ t: 'end', id: it.id });
+        this.emit('update', it);
+      }
+    } catch (e) {
+      if (this.link.isOpen && !it.dead) this._fail(it, e.message || 'Send failed');
+    }
+  }
+}
+
+/* ============================== 9. UI MODULES ============================== */
+class TransferUI {
+  constructor(root, ft) {
+    this.root = root; this.ft = ft; this.cards = new Map();
+    ft.on('update', it => this.render(it));
+    ft.on('reset', () => { root.innerHTML = ''; this.cards.clear(); });
+    root.addEventListener('click', e => {
+      const b = e.target.closest('button[data-act]'); if (!b) return;
+      const id = b.dataset.id, it = ft.items.get(id);
+      switch (b.dataset.act) {
+        case 'accept': ft.accept(id); break;
+        case 'decline': ft.decline(id); break;
+        case 'pause': ft.setPaused(id, true); break;
+        case 'resume': ft.setPaused(id, false); break;
+        case 'cancel': ft.cancel(id); break;
+        case 'save': ft.save(id); break;
+        case 'remove': { const c = this.cards.get(id); if (c) c.el.remove(); this.cards.delete(id); if (it) ft.items.delete(id); break; }
+      }
+    });
+  }
+  _create() {
+    const el = document.createElement('div'); el.className = 'item';
+    el.innerHTML = '<div class="name"></div><div class="meta"></div><div class="prog"><i></i></div><div class="acts"></div>';
+    this.root.prepend(el);
+    return { el, name: el.querySelector('.name'), meta: el.querySelector('.meta'),
+      prog: el.querySelector('.prog'), bar: el.querySelector('.prog i'), acts: el.querySelector('.acts'), key: '' };
+  }
+  render(it) {
+    let c = this.cards.get(it.id);
+    if (!c) { c = this._create(); this.cards.set(it.id, c); }
+    const bytes = this.ft.progressBytes(it);
+    const pct = it.size ? Math.min(100, bytes / it.size * 100) : 100;
+    const arrow = it.dir === 'out' ? '↑' : '↓';
+    const label = {
+      queued: 'Queued', finishing: 'Finishing…', interrupted: 'Connection lost — will resume automatically',
+      offered: it.dir === 'out' ? 'Waiting for the other device to accept…' : 'Incoming file — accept to start',
+      sending: it.paused ? 'Paused' : 'Sending…', receiving: it.paused ? 'Paused' : 'Receiving…',
+      done: it.dir === 'in' ? (it.result ? 'Received — ready to save' : 'Received and saved ✓') : 'Sent ✓',
+      rejected: 'Declined by the other device', declined: 'Declined', cancelled: 'Cancelled',
+      error: 'Failed: ' + (it.error || 'unknown error')
+    }[it.state] || it.state;
+    c.name.textContent = `${arrow} ${it.name}`;
+    c.meta.textContent = `${label} · ${fmtBytes(bytes)} of ${fmtBytes(it.size)} · ${pct.toFixed(pct < 10 ? 1 : 0)}%`;
+    c.bar.style.width = pct + '%';
+    c.prog.className = 'prog' + (it.state === 'done' ? ' done' : ['error', 'cancelled', 'rejected', 'declined'].includes(it.state) ? ' bad' : it.paused ? ' pause' : '');
+
+    const key = [it.state, it.paused, !!it.result].join(':');
+    if (key === c.key) return;
+    c.key = key;
+    const btn = (act, text, cls = '') => `<button class="btn ${cls}" data-act="${act}" data-id="${it.id}">${text}</button>`;
+    let html = '';
+    if (it.state === 'offered' && it.dir === 'in') html = btn('accept', 'Accept &amp; save', 'primary') + btn('decline', 'Decline');
+    else if (['sending', 'receiving'].includes(it.state)) html = btn(it.paused ? 'resume' : 'pause', it.paused ? 'Resume' : 'Pause') + btn('cancel', 'Cancel', 'danger');
+    else if (['queued', 'offered', 'interrupted', 'finishing'].includes(it.state)) html = btn('cancel', 'Cancel', 'danger');
+    else {
+      if (it.state === 'done' && it.dir === 'in' && it.result) html += btn('save', 'Save file', 'primary');
+      html += btn('remove', 'Dismiss');
+    }
+    c.acts.innerHTML = html;
+  }
+}
+
+/** Speed / route statistics inside the Files card. */
+class StatsBar {
+  constructor({ meter, link }) {
+    this.meter = meter; this.route = '—'; this.relayed = false;
+    link.on('route', t => {
+      this.relayed = t === 'relay';
+      this.route = { host: 'Direct (same network)', srflx: 'Direct (Internet)', prflx: 'Direct (Internet)',
+        relay: 'Relayed via server — slower' }[t] || t;
+      this.render();
+    });
+    link.on('close', () => { this.route = '—'; this.relayed = false; this.render(); });
+    meter.on('tick', () => this.render());
+    this.render();
+  }
+  render() {
+    const m = this.meter;
+    $('#stUp').textContent = fmtSpeed(m.speedUp);
+    $('#stDown').textContent = fmtSpeed(m.speedDown);
+    $('#stSent').textContent = fmtBytes(m.onWire);
+    $('#stRecv').textContent = fmtBytes(m.totalDown);
+    const r = $('#stRoute'); r.textContent = this.route; r.className = this.relayed ? 'warn' : '';
+  }
+}
+
+/** Room code, share link and join / new-room controls (bottom of the page). */
+class RoomManager extends Emitter {
+  constructor() {
+    super();
+    this.code = '';
+    window.addEventListener('hashchange', () => {
+      const c = this._fromHash(); if (c && c !== this.code) this.join(c);
+    });
+    $('#copyLinkBtn').addEventListener('click', () => copyText(this.link));
+    $('#copyCodeBtn').addEventListener('click', () => copyText(this.code));
+    $('#joinBtn').addEventListener('click', () => this._joinFromInput());
+    $('#joinInput').addEventListener('keydown', e => { if (e.key === 'Enter') this._joinFromInput(); });
+  }
+  static generate() {
+    const n = crypto.getRandomValues(new Uint32Array(1))[0] % 1000000;
+    return String(n).padStart(6, '0');
+  }
+  get link() { return location.origin + location.pathname + '#' + this.code; }
+  _fromHash() { const h = location.hash.replace('#', ''); return /^\d{6}$/.test(h) ? h : ''; }
+  _isReload() {
+    try {
+      const nav = performance.getEntriesByType('navigation')[0];
+      return !!nav && nav.type === 'reload';
+    } catch (e) { return false; }
+  }
+  _top() { window.scrollTo({ top: 0, behavior: 'smooth' }); }
+  start() {
+    const fromLink = this._isReload() ? '' : this._fromHash();
+    this.join(fromLink || RoomManager.generate());
+  }
+  join(code) {
+    this.code = code;
+    history.replaceState(null, '', '#' + code);
+    $('#roomCode').textContent = code; $('#linkField').value = this.link;
+    this.emit('change', code);
+  }
+  _joinFromInput() {
+    const v = $('#joinInput').value.trim();
+    if (!/^\d{6}$/.test(v)) { toast('Enter a 6-digit code'); return; }
+    $('#joinInput').value = ''; this.join(v); toast('Joined room ' + v); this._top();
+  }
+}
+
+/* ============================== 10. BOOTSTRAP ============================== */
+function main() {
+  const selfId = uid(10);
+  const relay = new Relay();
+  const link = new PeerLink(relay, selfId);
+  const meter = new Meter();
+  meter.pending = () => (link.file ? link.file.bufferedAmount : 0);
+
+  const text = new TextSync({
+    link, relay, selfId,
+    els: { log: $('#chatLog'), jump: $('#chatJump'), typing: $('#typing'), input: $('#chatInput'), count: $('#count'), send: $('#sendBtn'), clear: $('#clearBtn'), badge: $('#liveBadge') }
+  });
+  const files = new FileTransfer(link, meter);
+  new TransferUI($('#transfers'), files);
+  new StatsBar({ meter, link });
+  const rooms = new RoomManager();
+
+  const pill = $('#linkPill'), pillText = $('#linkPillText');
+  const updatePill = () => {
+    let cls = '', txt;
+    if (link.state === 'connected') { cls = 'on'; txt = 'Connected · P2P'; }
+    else if (link.state === 'negotiating') txt = 'Connecting to peer…';
+    else if (!relay.online) { cls = 'off'; txt = 'Signaling offline'; }
+    else txt = 'Waiting for the other device…';
+    pill.className = 'pill ' + cls; pillText.textContent = txt;
+  };
+  link.on('state', updatePill); relay.on('status', updatePill);
+  let lastPubErr = 0;
+  relay.on('pub-error', msg => {
+    if (Date.now() - lastPubErr < 6000) return;
+    lastPubErr = Date.now();
+    toast('Signaling send failed: ' + msg);
+    pillText.textContent = 'Send blocked: ' + msg; pill.className = 'pill off';
+  });
+  link.on('fail', n => { if (n >= 2) toast('Direct connection keeps failing — your network may block P2P.'); });
+  link.on('close', reason => { if (reason !== 'reset') toast('Peer disconnected — reconnecting…'); });
+  link.on('open', () => toast('Connected to peer ✓'));
+
+  const input = $('#fileInput'), drop = $('#drop'), panel = $('#filePanel');
+  $('#pickBtn').addEventListener('click', () => input.click());
+  input.addEventListener('change', () => { files.addFiles([...input.files]); input.value = ''; });
+  ['dragenter', 'dragover'].forEach(ev => panel.addEventListener(ev, e => { e.preventDefault(); drop.classList.add('over'); }));
+  ['dragleave', 'drop'].forEach(ev => panel.addEventListener(ev, e => { e.preventDefault(); drop.classList.remove('over'); }));
+  panel.addEventListener('drop', e => { if (e.dataTransfer.files.length) files.addFiles([...e.dataTransfer.files]); });
+
+  rooms.on('change', code => {
+    files.reset(); text.reset(); link.reset();
+    relay.join(code);
+    updatePill();
+  });
+
+  window.addEventListener('pagehide', () => link.bye());
+  window.addEventListener('online', () => { if (!relay.online) relay.join(rooms.code); });
+  if (OpfsSink.supported()) OpfsSink.purge();
+
+  rooms.start();
+}
+main();
+
+})();
+</script>
+</body>
+</html>
