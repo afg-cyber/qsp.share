@@ -5,16 +5,16 @@
 <meta name="google-site-verification" content="tpkNhher90hnbwTnqPTkPQGsQdwATkfV1fgkeTHM8KM" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="color-scheme" content="light dark">
-<title>P2P File Sharing and Chat in Your Browser | qsp.share</title>
-<meta name="description" content="Use qsp.share for P2P file sharing and chat between devices. Join a room with a code, transfer files in your browser, and message without an account.">
+<title>P2P File Sharing and Chat in Your Browser | qsp Share</title>
+<meta name="description" content="Use qsp Share for P2P file sharing and chat between devices. Join a room with a code, transfer files in your browser, and message without an account.">
 <link rel="canonical" href="https://qspshare.vercel.app/">
 <meta property="og:type" content="website">
-<meta property="og:title" content="P2P File Sharing and Chat in Your Browser | qsp.share">
-<meta property="og:description" content="Use qsp.share for P2P file sharing and chat between devices. Join a room with a code, transfer files in your browser, and message without an account.">
+<meta property="og:title" content="P2P File Sharing and Chat in Your Browser | qsp Share">
+<meta property="og:description" content="Use qsp Share for P2P file sharing and chat between devices. Join a room with a code, transfer files in your browser, and message without an account.">
 <meta property="og:url" content="https://qspshare.vercel.app/">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="P2P File Sharing and Chat in Your Browser | qsp.share">
-<meta name="twitter:description" content="Use qsp.share for P2P file sharing and chat between devices. Join a room with a code, transfer files in your browser, and message without an account.">
+<meta name="twitter:title" content="P2P File Sharing and Chat in Your Browser | qsp Share">
+<meta name="twitter:description" content="Use qsp Share for P2P file sharing and chat between devices. Join a room with a code, transfer files in your browser, and message without an account.">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/vazirmatn@33.0.3/Vazirmatn-font-face.css">
 <style>
   :root{
@@ -49,7 +49,8 @@
   /* ---------- Header ---------- */
   .top{max-width:1180px;margin:0 auto;padding:14px 16px 6px;display:flex;align-items:center;justify-content:space-between;gap:10px}
   .brand{display:flex;align-items:center;gap:10px;font-weight:700;font-size:1.1rem}
-  .logo{width:32px;height:32px;border-radius:9px;display:grid;place-items:center;background:var(--accent);color:var(--accent-ink);font-size:17px}
+  .logo{width:36px;height:36px;border-radius:12px;display:grid;place-items:center;background:linear-gradient(145deg,#4f8dff,#6849df);color:#fff;box-shadow:0 4px 12px rgba(79,141,255,.28)}
+  .logo svg{width:21px;height:21px;display:block}
   .intro{max-width:1180px;margin:0 auto;padding:10px 16px 2px}
   .intro h1{margin:0;font-size:clamp(1.25rem,2.4vw,1.8rem);line-height:1.25}
   .intro p{margin:5px 0 0;color:var(--muted)}
@@ -153,7 +154,7 @@
 <body>
 
 <header class="top">
-  <div class="brand"><span class="logo">⚡</span><span>qsp.share</span><span class="muted" style="margin-inline-start:14px;font-weight:600">786</span></div>
+  <div class="brand"><span class="logo" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M8 11 15.8 6.8M8 13l7.8 4.2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="5.5" cy="12" r="2.5" fill="currentColor"/><circle cx="18" cy="6" r="2.5" fill="currentColor"/><circle cx="18" cy="18" r="2.5" fill="currentColor"/></svg></span><span>qsp Share</span><span class="muted" style="margin-inline-start:14px;font-weight:600">786</span></div>
   <div class="pill" id="linkPill"><span class="dot"></span><span id="linkPillText">Starting…</span></div>
 </header>
 
@@ -236,7 +237,7 @@
 'use strict';
 
 /* =====================================================================
- * qsp.share — single-file app
+ * qsp Share — single-file app
  *  1. CONFIG   2. UTILS   3. RELAY   4. PEER LINK   5. METER
  *  6. SINKS    7. TEXT SYNC   8. FILE TRANSFER   9. UI   10. BOOTSTRAP
  * ===================================================================== */
