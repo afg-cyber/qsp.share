@@ -50,6 +50,9 @@
   .top{max-width:1180px;margin:0 auto;padding:14px 16px 6px;display:flex;align-items:center;justify-content:space-between;gap:10px}
   .brand{display:flex;align-items:center;gap:10px;font-weight:700;font-size:1.1rem}
   .logo{width:32px;height:32px;border-radius:9px;display:grid;place-items:center;background:var(--accent);color:var(--accent-ink);font-size:17px}
+  .intro{max-width:1180px;margin:0 auto;padding:10px 16px 2px}
+  .intro h1{margin:0;font-size:clamp(1.25rem,2.4vw,1.8rem);line-height:1.25}
+  .intro p{margin:5px 0 0;color:var(--muted)}
   .pill{display:inline-flex;align-items:center;gap:8px;font-size:.8rem;color:var(--muted);background:var(--card);
     border:1px solid var(--border);padding:5px 12px;border-radius:999px}
   .dot{width:8px;height:8px;border-radius:50%;background:var(--warn)}
@@ -120,8 +123,8 @@
   .acts .btn{padding:3px 12px;font-size:.76rem}
   .hint{font-size:.74rem;color:var(--muted);margin:10px 2px 0}
 
-  /* ---------- Connect (bottom) ---------- */
-  .connect{max-width:1180px;margin:0 auto;padding:8px 16px 28px}
+  /* ---------- Connect / room sharing ---------- */
+  .connect{max-width:1180px;margin:0 auto;padding:8px 16px 4px}
   .connect .card{padding:10px 14px;border-radius:12px;flex-direction:row;align-items:stretch;gap:16px}
   .conn-half{flex:1;min-width:0;display:flex;flex-direction:column;gap:6px;justify-content:center}
   .conn-sep{width:1px;background:var(--border);flex:none}
@@ -154,7 +157,36 @@
   <div class="pill" id="linkPill"><span class="dot"></span><span id="linkPillText">Starting…</span></div>
 </header>
 
-<!-- ===== Top: Chat + Files ===== -->
+<section class="intro" aria-labelledby="pageTitle">
+  <h1 id="pageTitle">Share files and chat with a room code</h1>
+  <p>Connect two devices in your browser. No account needed.</p>
+</section>
+
+<!-- ===== Room: Share / Join ===== -->
+<section class="connect" id="connect">
+  <div class="card">
+    <div class="conn-half">
+      <div class="label">Your room code</div>
+      <div class="code" id="roomCode">------</div>
+      <input class="field" id="linkField" readonly aria-label="Room link">
+      <div class="row">
+        <button class="btn primary" id="copyLinkBtn">Copy link</button>
+        <button class="btn" id="copyCodeBtn">Copy code</button>
+      </div>
+    </div>
+    <div class="conn-sep"></div>
+    <div class="conn-half">
+      <div class="label">Join another room</div>
+      <div class="join-row">
+        <input class="field" id="joinInput" inputmode="numeric" maxlength="6" placeholder="123456" autocomplete="off" aria-label="Room code to join">
+        <button class="btn primary" id="joinBtn">Join</button>
+      </div>
+      <span class="muted small">Enter the 6-digit code from the other device</span>
+    </div>
+  </div>
+</section>
+
+<!-- ===== Chat + Files ===== -->
 <main class="layout">
   <section class="card chat-card">
     <div class="card-head">
@@ -193,33 +225,9 @@
       <input type="file" id="fileInput" multiple hidden>
     </div>
     <div class="transfers" id="transfers"></div>
-    <p class="hint">Keep both tabs open during a transfer. Large files are streamed in chunks.</p>
+    <p class="hint">Keep both tabs open during transfer. If internet speed is slow, check Route above: “Relayed via server” means a TURN relay may be the bottleneck.</p>
   </section>
 </main>
-
-<!-- ===== Bottom: Room / Share ===== -->
-<section class="connect" id="connect">
-  <div class="card">
-    <div class="conn-half">
-      <div class="label">Your room code</div>
-      <div class="code" id="roomCode">------</div>
-      <input class="field" id="linkField" readonly aria-label="Room link">
-      <div class="row">
-        <button class="btn primary" id="copyLinkBtn">Copy link</button>
-        <button class="btn" id="copyCodeBtn">Copy code</button>
-      </div>
-    </div>
-    <div class="conn-sep"></div>
-    <div class="conn-half">
-      <div class="label">Join another room</div>
-      <div class="join-row">
-        <input class="field" id="joinInput" inputmode="numeric" maxlength="6" placeholder="123456" autocomplete="off" aria-label="Room code to join">
-        <button class="btn primary" id="joinBtn">Join</button>
-      </div>
-      <span class="muted small">Enter the 6-digit code from the other device</span>
-    </div>
-  </div>
-</section>
 
 <div class="toast" id="toast"></div>
 
@@ -258,6 +266,7 @@ const CONFIG = {
   negotiationTimeoutMs: 20000,
   memoryWarnBytes: 1.5 * 1024 ** 3
 };
+const MAX_AUTO_ACCEPT_FILES = 1000;
 
 /* ============================== 2. UTILS ============================== */
 const $ = (sel, root = document) => root.querySelector(sel);
@@ -589,6 +598,31 @@ class FsAccessSink {
   async close() { await this.w.close(); return null; }
   async abort() { try { await this.w.abort(); } catch (e) { /* ignore */ } }
 }
+class DirectorySink {
+  static supported() { return typeof window.showDirectoryPicker === 'function'; }
+  constructor(dir) { this.dir = dir; this.name = ''; this.w = null; }
+  async open(name) {
+    const dot = name.lastIndexOf('.');
+    const base = dot > 0 ? name.slice(0, dot) : name;
+    const ext = dot > 0 ? name.slice(dot) : '';
+    for (let n = 1; ; n++) {
+      const candidate = n === 1 ? name : `${base} (${n})${ext}`;
+      try { await this.dir.getFileHandle(candidate); }
+      catch (e) {
+        if (e.name === 'NotFoundError') { this.name = candidate; break; }
+        if (e.name !== 'TypeMismatchError') throw e;
+      }
+    }
+    const handle = await this.dir.getFileHandle(this.name, { create: true });
+    this.w = await handle.createWritable();
+  }
+  write(buf) { return this.w.write(buf); }
+  async close() { await this.w.close(); return null; }
+  async abort() {
+    if (this.w) { try { await this.w.abort(); } catch (e) { /* ignore */ } }
+    if (this.name) { try { await this.dir.removeEntry(this.name); } catch (e) { /* ignore */ } }
+  }
+}
 class OpfsSink {
   static supported() {
     return !!(navigator.storage && navigator.storage.getDirectory &&
@@ -787,7 +821,7 @@ class TextSync {
  *  - large send buffer + large ack window keep the pipe full on fast links
  *
  * Wire protocol (JSON strings; raw ArrayBuffers are file data):
- *   offer{id,name,size,mime}  accept{id,offset}  reject{id}
+ *   offer{id,name,size,mime,batchId,batchIndex,batchCount,batchTotalBytes}  accept{id,offset}  reject{id}
  *   ack{id,n}  state{id,paused}  end{id}  done{id}  cancel{id}  resume-req{id,offset,paused}
  */
 class FileTransfer extends Emitter {
@@ -795,6 +829,7 @@ class FileTransfer extends Emitter {
     super();
     this.link = link; this.meter = meter;
     this.items = new Map(); this.activeIn = null;
+    this.autoAcceptBatch = null;
     this.wl = null; this.wlBusy = false;
     this.on('update', () => this._syncWake());
     document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') this._syncWake(); });
@@ -805,11 +840,15 @@ class FileTransfer extends Emitter {
 
   addFiles(fileList) {
     if (!this.link.isOpen) { toast('Connect to a peer first'); return; }
-    for (const f of fileList) {
+    const files = [...fileList];
+    const batchId = files.length > 1 ? uid(10) : '';
+    const batchTotalBytes = files.reduce((total, f) => total + f.size, 0);
+    files.forEach((f, batchIndex) => {
       const it = { id: uid(10), dir: 'out', name: f.name, size: f.size, mime: f.type, state: 'queued',
-        file: f, offset: 0, acked: 0, paused: false, runId: 0, wake: null };
+        file: f, offset: 0, acked: 0, paused: false, runId: 0, wake: null,
+        batchId, batchIndex, batchCount: files.length, batchTotalBytes };
       this.items.set(it.id, it); this.emit('update', it);
-    }
+    });
     this._pump();
   }
   async accept(id) {
@@ -818,14 +857,52 @@ class FileTransfer extends Emitter {
     const sink = createSink();
     if (sink instanceof MemorySink && it.size > CONFIG.memoryWarnBytes &&
         !confirm('This browser must keep the whole file in memory. Large files may crash the tab. Continue?')) return;
+    await this._acceptWithSink(it, sink);
+  }
+  async acceptBatch(id) {
+    const it = this.items.get(id);
+    if (!it || it.dir !== 'in' || it.state !== 'offered' || !DirectorySink.supported() ||
+        !it.batchId || it.batchIndex !== 0 || it.batchCount < 2 || it.batchCount > MAX_AUTO_ACCEPT_FILES) return;
+    let dir;
+    try { dir = await window.showDirectoryPicker({ mode: 'readwrite' }); }
+    catch (e) { if (e.name !== 'AbortError') toast('Cannot choose folder: ' + (e.message || e.name)); return; }
+    if (!this.link.isOpen || it.state !== 'offered') return;
+    const batch = { id: it.batchId, dir, count: it.batchCount, nextIndex: 0 };
+    this.autoAcceptBatch = batch;
+    try {
+      if (!await this._acceptBatchFile(it, batch) && this.autoAcceptBatch === batch) this.autoAcceptBatch = null;
+    } catch (e) {
+      if (this.autoAcceptBatch === batch) this.autoAcceptBatch = null;
+      console.error(e); toast('Could not accept batch: ' + (e.message || e.name));
+    }
+  }
+  async _acceptBatchFile(it, batch) {
+    if (this.autoAcceptBatch !== batch || it.batchId !== batch.id ||
+        it.batchCount !== batch.count || it.batchIndex !== batch.nextIndex) return false;
+    const accepted = await this._acceptWithSink(it, new DirectorySink(batch.dir));
+    if (!accepted) {
+      if (this.autoAcceptBatch === batch) this.autoAcceptBatch = null;
+      return false;
+    }
+    batch.nextIndex++;
+    if (batch.nextIndex >= batch.count) this.autoAcceptBatch = null;
+    return true;
+  }
+  async _acceptWithSink(it, sink) {
+    if (it.state !== 'offered' || (this.activeIn && this.activeIn !== it)) return false;
     try { await sink.open(it.name, it.size); }
-    catch (e) { if (e.name !== 'AbortError') toast('Cannot save file: ' + (e.message || e.name)); return; }
+    catch (e) {
+      await sink.abort();
+      if (e.name !== 'AbortError') toast('Cannot save file: ' + (e.message || e.name));
+      return false;
+    }
     it.sink = sink; it.state = 'receiving';
     it.received = 0; it.written = 0; it.lastAck = 0; it.chain = Promise.resolve(); it.dead = false;
     it.batch = []; it.batchBytes = 0;
     this.activeIn = it;
-    this._ctrl({ t: 'accept', id, offset: 0 });
+    this._ctrl({ t: 'accept', id: it.id, offset: 0 });
     this.emit('update', it);
+    return true;
   }
   decline(id) {
     const it = this.items.get(id); if (!it || it.state !== 'offered') return;
@@ -854,6 +931,7 @@ class FileTransfer extends Emitter {
     return Math.max(it.acked, it.offset - buffered);
   }
   reset() {
+    this.autoAcceptBatch = null;
     for (const it of this.items.values()) {
       if (['sending', 'receiving', 'offered', 'finishing'].includes(it.state)) this._ctrl({ t: 'cancel', id: it.id });
       this._kill(it, 'cancelled', true);
@@ -869,6 +947,7 @@ class FileTransfer extends Emitter {
     it._ui = now; this.emit('update', it);
   }
   _kill(it, state, quiet = false) {
+    if (this.autoAcceptBatch && it.dir === 'in' && it.batchId === this.autoAcceptBatch.id) this.autoAcceptBatch = null;
     it.state = state; it.dead = true; it.runId++;
     it.batch = []; it.batchBytes = 0;
     if (it.sink) { it.sink.abort(); it.sink = null; }
@@ -886,7 +965,8 @@ class FileTransfer extends Emitter {
     if (all.some(i => ['offered', 'sending', 'finishing', 'interrupted'].includes(i.state))) return;
     const next = all.find(i => i.state === 'queued'); if (!next) return;
     next.state = 'offered';
-    this._ctrl({ t: 'offer', id: next.id, name: next.name, size: next.size, mime: next.mime });
+    this._ctrl({ t: 'offer', id: next.id, name: next.name, size: next.size, mime: next.mime,
+      batchId: next.batchId, batchIndex: next.batchIndex, batchCount: next.batchCount, batchTotalBytes: next.batchTotalBytes });
     this.emit('update', next);
   }
 
@@ -907,6 +987,7 @@ class FileTransfer extends Emitter {
     this._pump();
   }
   _onClose() {
+    this.autoAcceptBatch = null;
     for (const it of [...this.items.values()]) {
       if (it.dir === 'out') {
         if (['sending', 'finishing'].includes(it.state)) { it.state = 'interrupted'; it.runId++; this._wake(it); }
@@ -944,9 +1025,27 @@ class FileTransfer extends Emitter {
 
   /* ---- receiving ---- */
   _onOffer(m) {
+    const batchCount = m.batchCount, batchIndex = m.batchIndex;
+    const validBatch = typeof m.batchId === 'string' && /^[a-z0-9]{10}$/.test(m.batchId) &&
+      Number.isSafeInteger(batchCount) && batchCount > 1 && batchCount <= MAX_AUTO_ACCEPT_FILES &&
+      Number.isSafeInteger(batchIndex) && batchIndex >= 0 && batchIndex < batchCount;
     const it = { id: m.id, dir: 'in', name: m.name, size: m.size, mime: m.mime, state: 'offered',
+      batchId: validBatch ? m.batchId : '', batchIndex: validBatch ? batchIndex : 0,
+      batchCount: validBatch ? batchCount : 1,
+      batchTotalBytes: validBatch && Number.isSafeInteger(m.batchTotalBytes) && m.batchTotalBytes >= 0 ? m.batchTotalBytes : m.size,
       received: 0, written: 0, lastAck: 0, paused: false, dead: false, batch: [], batchBytes: 0 };
     this.items.set(it.id, it); this.emit('update', it);
+    const batch = this.autoAcceptBatch;
+    if (batch) {
+      if (it.batchId === batch.id && it.batchCount === batch.count && it.batchIndex === batch.nextIndex) {
+        this._acceptBatchFile(it, batch).catch(e => {
+          if (this.autoAcceptBatch === batch) this.autoAcceptBatch = null;
+          console.error(e); toast('Could not accept file: ' + (e.message || e.name));
+        });
+        return;
+      }
+      this.autoAcceptBatch = null;
+    }
     toast('Incoming file: ' + m.name);
   }
   _onChunk(buf) {
@@ -1067,6 +1166,7 @@ class TransferUI {
       const id = b.dataset.id, it = ft.items.get(id);
       switch (b.dataset.act) {
         case 'accept': ft.accept(id); break;
+        case 'accept-batch': ft.acceptBatch(id); break;
         case 'decline': ft.decline(id); break;
         case 'pause': ft.setPaused(id, true); break;
         case 'resume': ft.setPaused(id, false); break;
@@ -1091,7 +1191,9 @@ class TransferUI {
     const arrow = it.dir === 'out' ? '↑' : '↓';
     const label = {
       queued: 'Queued', finishing: 'Finishing…', interrupted: 'Connection lost — will resume automatically',
-      offered: it.dir === 'out' ? 'Waiting for the other device to accept…' : 'Incoming file — accept to start',
+      offered: it.dir === 'out' ? 'Waiting for the other device to accept…' : it.batchCount > 1
+        ? `Incoming file ${it.batchIndex + 1} of ${it.batchCount} · ${fmtBytes(it.batchTotalBytes)} total`
+        : 'Incoming file — accept to start',
       sending: it.paused ? 'Paused' : 'Sending…', receiving: it.paused ? 'Paused' : 'Receiving…',
       done: it.dir === 'in' ? (it.result ? 'Received — ready to save' : 'Received and saved ✓') : 'Sent ✓',
       rejected: 'Declined by the other device', declined: 'Declined', cancelled: 'Cancelled',
@@ -1107,7 +1209,14 @@ class TransferUI {
     c.key = key;
     const btn = (act, text, cls = '') => `<button class="btn ${cls}" data-act="${act}" data-id="${it.id}">${text}</button>`;
     let html = '';
-    if (it.state === 'offered' && it.dir === 'in') html = btn('accept', 'Accept &amp; save', 'primary') + btn('decline', 'Decline');
+    if (it.state === 'offered' && it.dir === 'in') {
+      const canAcceptBatch = it.batchId && it.batchIndex === 0 && it.batchCount > 1 &&
+        it.batchCount <= MAX_AUTO_ACCEPT_FILES && DirectorySink.supported();
+      html = canAcceptBatch
+        ? btn('accept-batch', 'Accept all to folder', 'primary') +
+          btn('accept', 'This file only') + btn('decline', 'Decline')
+        : btn('accept', 'Accept &amp; save', 'primary') + btn('decline', 'Decline');
+    }
     else if (['sending', 'receiving'].includes(it.state)) html = btn(it.paused ? 'resume' : 'pause', it.paused ? 'Resume' : 'Pause') + btn('cancel', 'Cancel', 'danger');
     else if (['queued', 'offered', 'interrupted', 'finishing'].includes(it.state)) html = btn('cancel', 'Cancel', 'danger');
     else {
