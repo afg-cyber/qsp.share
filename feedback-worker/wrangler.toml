@@ -1,0 +1,13 @@
+name = "qsp-share-feedback"
+main = "src/index.js"
+compatibility_date = "2025-03-01"
+workers_dev = true
+
+[vars]
+ALLOWED_ORIGINS = "https://qspshare.vercel.app"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "qsp-share-feedback"
+database_id = "9d7be60a-04e2-420c-8277-609af7a80dc0"
+migrations_dir = "migrations"
