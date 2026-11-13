@@ -1,0 +1,1977 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<meta name="google-site-verification" content="tpkNhher90hnbwTnqPTkPQGsQdwATkfV1fgkeTHM8KM" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<title>Share files and chat privately | qsp Share</title>
+<meta name="description" content="Share files and chat between devices with a room code. No account needed; everything works in your browser.">
+<link rel="canonical" href="https://qspshare.vercel.app/">
+<meta property="og:site_name" content="qsp Share">
+<meta property="og:locale" content="en_US">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://qspshare.vercel.app/">
+<meta property="og:title" content="Share files and chat privately | qsp Share">
+<meta property="og:description" content="Share files and chat between devices with a room code. No account needed; everything works in your browser.">
+<meta property="og:image" content="https://qspshare.vercel.app/og-image.png">
+<meta property="og:image:secure_url" content="https://qspshare.vercel.app/og-image.png">
+<meta property="og:image:type" content="image/png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="qsp Share lets you share files and chat directly between devices.">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Share files and chat privately | qsp Share">
+<meta name="twitter:description" content="Share files and chat between devices with a room code. No account needed; everything works in your browser.">
+<meta name="twitter:image" content="https://qspshare.vercel.app/og-image.png">
+<meta name="twitter:image:alt" content="qsp Share lets you share files and chat directly between devices.">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/vazirmatn@33.0.3/Vazirmatn-font-face.css">
+<style>
+  :root{
+    color-scheme:light;
+    --bg:#f4f6fd; --card:#ffffff; --soft:#f0f1fa; --border:#e0e3f0;
+    --text:#202039; --muted:#74768d; --accent:#5c58d6; --accent-ink:#fff;
+    --peer:#ececfa; --ok:#0d9c80; --warn:#b97610; --err:#d94f68;
+    --shadow:0 2px 6px rgba(37,34,82,.04),0 14px 34px rgba(37,34,82,.07);
+    --shadow-hover:0 6px 16px rgba(37,34,82,.07),0 20px 46px rgba(37,34,82,.1);
+    --glow-primary:rgba(105,93,230,.12); --glow-secondary:rgba(44,191,173,.08);
+    --hero-bg:linear-gradient(130deg,#fff 0%,#eeedff 100%);
+    --hero-border:#e1e1f4; --hero-kicker:#6962c7; --code-bg:#f0f0ff;
+  }
+  @media (prefers-color-scheme:dark){
+    :root:not([data-theme]){
+      color-scheme:dark;
+      --bg:#11121b; --card:#1b1c29; --soft:#252637; --border:#37394f;
+      --text:#f3f2fb; --muted:#a3a4bb; --accent:#a99bff; --accent-ink:#1d1930;
+      --peer:#303145; --ok:#55d9bd; --warn:#f5c070; --err:#ff8194;
+      --shadow:0 4px 12px rgba(0,0,0,.2),0 16px 36px rgba(0,0,0,.22);
+      --shadow-hover:0 8px 18px rgba(0,0,0,.24),0 22px 48px rgba(0,0,0,.3);
+      --glow-primary:rgba(136,119,255,.16); --glow-secondary:rgba(60,210,177,.08);
+      --hero-bg:linear-gradient(130deg,#1e1e2d,#29283d);
+      --hero-border:#393950; --hero-kicker:#c3baff; --code-bg:#27263d;
+    }
+  }
+  :root[data-theme="dark"]{
+    color-scheme:dark;
+    --bg:#11121b; --card:#1b1c29; --soft:#252637; --border:#37394f;
+    --text:#f3f2fb; --muted:#a3a4bb; --accent:#a99bff; --accent-ink:#1d1930;
+    --peer:#303145; --ok:#55d9bd; --warn:#f5c070; --err:#ff8194;
+    --shadow:0 4px 12px rgba(0,0,0,.2),0 16px 36px rgba(0,0,0,.22);
+    --shadow-hover:0 8px 18px rgba(0,0,0,.24),0 22px 48px rgba(0,0,0,.3);
+    --glow-primary:rgba(136,119,255,.16); --glow-secondary:rgba(60,210,177,.08);
+    --hero-bg:linear-gradient(130deg,#1e1e2d,#29283d);
+    --hero-border:#393950; --hero-kicker:#c3baff; --code-bg:#27263d;
+  }
+  :root[data-theme="light"]{color-scheme:light}
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;background:var(--bg);color:var(--text);
+    font-family:'Vazirmatn',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;line-height:1.6;font-size:15px}
+  body{min-height:100vh;padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom);
+    background:radial-gradient(ellipse at 8% 0,var(--glow-primary),transparent 34rem),
+      radial-gradient(ellipse at 94% 18%,var(--glow-secondary),transparent 30rem),var(--bg);
+    background-attachment:fixed}
+  .muted{color:var(--muted)} .small{font-size:.78rem}
+  button{font-family:inherit;cursor:pointer;border:0;color:inherit}
+  .btn{background:var(--soft);border:1px solid var(--border);padding:7px 14px;border-radius:10px;font-size:.86rem;transition:transform .16s ease,box-shadow .16s ease,border-color .16s ease}
+  .btn:hover{border-color:var(--accent)}
+  .btn:active{transform:scale(.97)}
+  .btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink);font-weight:600}
+  .btn.primary:hover{filter:brightness(1.08);box-shadow:0 5px 16px var(--glow-primary);transform:translateY(-1px)}
+  .btn.danger:hover{border-color:var(--err);color:var(--err)}
+  .btn:disabled{opacity:.45;cursor:not-allowed}
+  :focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+  /* ---------- Header ---------- */
+  .top{max-width:1180px;margin:0 auto;padding:14px 16px 6px;display:flex;align-items:center;justify-content:space-between;gap:10px}
+  .brand{display:flex;align-items:center;gap:10px;font-weight:700;font-size:1.1rem}
+  .logo{width:36px;height:36px;border-radius:12px;display:grid;place-items:center;background:linear-gradient(145deg,#4f8dff,#6849df);color:#fff;box-shadow:0 4px 12px rgba(79,141,255,.28)}
+  .logo svg{width:21px;height:21px;display:block}
+  .intro{max-width:1148px;margin:12px auto 10px;padding:24px 28px;display:flex;align-items:center;justify-content:space-between;gap:24px;
+    min-height:168px;border:1px solid var(--hero-border);border-radius:22px;background:var(--hero-bg);box-shadow:var(--shadow);overflow:hidden;position:relative}
+  .intro::after{content:"";position:absolute;inset:auto -60px -130px auto;width:280px;height:280px;border-radius:50%;
+    background:radial-gradient(circle,var(--glow-primary),transparent 70%);pointer-events:none}
+  .intro-copy{position:relative;z-index:1}
+  .hero-kicker{display:inline-flex;align-items:center;gap:7px;margin-bottom:8px;color:var(--hero-kicker);font-size:.72rem;font-weight:700;letter-spacing:.08em}
+  .hero-kicker::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 4px var(--glow-primary)}
+  .intro h1{margin:0;font-size:clamp(1.45rem,3vw,2.05rem);line-height:1.25;letter-spacing:-.02em}
+  .intro p{margin:7px 0 0;color:var(--muted);font-size:.96rem}
+  .hero-visual{width:clamp(120px,20vw,190px);flex:none;color:var(--accent);position:relative;z-index:1;overflow:visible;animation:hero-float 5s ease-in-out infinite}
+  .hero-visual .device{fill:var(--card);stroke:currentColor;stroke-width:2}
+  .hero-visual .link{fill:none;stroke:currentColor;stroke-width:3;stroke-linecap:round;stroke-dasharray:6 7;animation:link-flow 2.4s linear infinite}
+  .hero-visual .node{fill:var(--card);stroke:currentColor;stroke-width:3}
+  @keyframes hero-float{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+  @keyframes link-flow{to{stroke-dashoffset:-26}}
+  .pill{display:inline-flex;align-items:center;gap:8px;font-size:.8rem;color:var(--muted);background:var(--card);
+    border:1px solid var(--border);padding:5px 12px;border-radius:999px}
+  .dot{width:8px;height:8px;border-radius:50%;background:var(--warn)}
+  .pill.on .dot{background:var(--ok)} .pill.off .dot{background:var(--err)}
+  .pill.on{color:var(--text)}
+
+  /* ---------- Main layout: chat | files ---------- */
+  .layout{max-width:1180px;margin:0 auto;padding:8px 16px 8px;display:grid;grid-template-columns:minmax(0,3fr) minmax(0,2fr);gap:14px;align-items:stretch}
+  .card{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:14px;box-shadow:var(--shadow);display:flex;flex-direction:column;min-width:0;
+    transition:transform .18s ease,border-color .18s ease,box-shadow .18s ease}
+  .card:hover{transform:translateY(-2px);border-color:var(--accent);box-shadow:var(--shadow-hover)}
+  .card-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:10px}
+  .card-head h2{margin:0;font-size:1rem}
+  .chat-card{height:min(580px,calc(100vh - 130px));height:min(580px,calc(100dvh - 130px));min-height:360px}
+  @media (max-width:860px){
+    .layout{grid-template-columns:1fr}
+    .chat-card{height:min(520px,calc(100vh - 110px));height:min(520px,calc(100dvh - 110px))}
+  }
+
+  /* ---------- Chat ---------- */
+  .badge{font-size:.76rem;padding:2px 10px;border-radius:999px;border:1px solid var(--border);color:var(--warn);background:var(--soft)}
+  .badge.live{color:var(--ok)}
+  .chat-wrap{position:relative;flex:1;min-height:0;display:flex}
+  .chat{flex:1;overflow-y:auto;background:var(--soft);border-radius:12px;padding:10px;display:flex;flex-direction:column;gap:6px}
+  .chat-empty{margin:auto;text-align:center;color:var(--muted);font-size:.88rem;padding:20px}
+  .bubble{max-width:84%;padding:7px 11px 4px;border-radius:14px;word-break:break-word}
+  .bubble.me{align-self:flex-end;background:var(--accent);color:var(--accent-ink);border-bottom-right-radius:4px}
+  .bubble.peer{align-self:flex-start;background:var(--peer);border-bottom-left-radius:4px}
+  .bubble .body{white-space:pre-wrap;font-size:.93rem;line-height:1.6;unicode-bidi:plaintext}
+  .bubble .foot{display:flex;gap:10px;align-items:center;justify-content:flex-end;font-size:.68rem;opacity:.75;margin-top:1px}
+  .bubble .cp{background:transparent;padding:0;font-size:.68rem;opacity:0;text-decoration:underline}
+  .bubble:hover .cp,.bubble:focus-within .cp{opacity:1}
+  @media (hover:none){.bubble .cp{opacity:.85}}
+  .jump{position:absolute;left:50%;bottom:10px;transform:translateX(-50%);background:var(--accent);color:var(--accent-ink);padding:4px 14px;
+    border-radius:999px;font-size:.76rem;box-shadow:0 4px 14px rgba(0,0,0,.25)}
+  .jump[hidden]{display:none}
+  .typing{height:20px;font-size:.76rem;color:var(--muted);padding:2px 4px;opacity:0;transition:opacity .2s}
+  .typing.show{opacity:1}
+  .typing i{display:inline-block;width:4px;height:4px;border-radius:50%;background:var(--muted);margin-left:3px;animation:blink 1.2s infinite}
+  .typing i:nth-child(2){animation-delay:.2s}.typing i:nth-child(3){animation-delay:.4s}
+  @keyframes blink{0%,80%,100%{opacity:.2}40%{opacity:1}}
+  .composer{display:flex;gap:8px;align-items:flex-end}
+  .composer textarea{flex:1;min-height:44px;max-height:140px;resize:none;background:var(--card);color:var(--text);
+    border:1px solid var(--border);border-radius:12px;padding:10px 14px;font-family:inherit;font-size:.95rem;line-height:1.6;outline:none}
+  .composer textarea:focus{border-color:var(--accent)}
+  .composer textarea::placeholder{color:var(--muted)}
+  .composer .btn{height:44px;padding:0 22px}
+  .bar{display:flex;align-items:center;gap:8px;margin-top:8px}
+  .bar .spacer{flex:1}
+  .count{font-size:.76rem;color:var(--muted)} .count.bad{color:var(--err)}
+
+  /* ---------- Files ---------- */
+  .stats{display:grid;grid-template-columns:1fr 1fr;gap:6px 12px;background:var(--soft);border-radius:12px;padding:8px 12px;margin-bottom:10px;font-size:.8rem}
+  .stats div{display:flex;justify-content:space-between;gap:8px;color:var(--muted)}
+  .stats b{color:var(--text);font-weight:600;font-variant-numeric:tabular-nums}
+  .stats .full{grid-column:1/-1}
+  .stats b.warn{color:var(--warn)}
+  .drop{border:2px dashed var(--border);border-radius:16px;padding:20px 12px;text-align:center;color:var(--muted);
+    font-size:.88rem;display:flex;flex-direction:column;gap:8px;align-items:center;transition:transform .18s ease,border-color .18s ease,background .18s ease}
+  .drop:hover{border-color:var(--accent);background:var(--soft);transform:translateY(-1px)}
+  .drop.over{border-color:var(--accent);background:var(--soft);color:var(--text);box-shadow:inset 0 0 0 1px var(--accent)}
+  .drop-ico{font-size:26px;line-height:1}
+  .feedback-section{position:relative;max-width:1180px;margin:14px auto 0;padding:12px;display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr);
+    gap:10px 20px;background:var(--card);border:1px solid var(--border);border-radius:16px;box-shadow:var(--shadow)}
+  .feedback-copy{padding-inline-end:26px}
+  .feedback-copy h2{margin:0;font-size:1.05rem}
+  .feedback-copy p{margin:4px 0 0;color:var(--muted);font-size:.8rem}
+  .feedback-form{display:flex;flex-direction:column;gap:6px;min-width:0}
+  .feedback-label{font-size:.82rem;font-weight:600}
+  .feedback-input,.feedback-admin-input{width:100%;border:1px solid var(--border);border-radius:10px;background:var(--soft);color:var(--text);
+    padding:10px 12px;font:inherit;outline:none}
+  .feedback-input{min-height:64px;resize:vertical;padding:8px 10px}
+  .feedback-input:focus,.feedback-admin-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--glow-primary)}
+  .feedback-actions{display:flex;align-items:center;justify-content:space-between;gap:10px}
+  .feedback-counter,.feedback-status{font-size:.76rem;color:var(--muted)}
+  .feedback-status{min-height:1.4em;margin:0}
+  .feedback-status:empty{display:none}
+  .feedback-status.error{color:var(--err)}
+  .feedback-status.success{color:var(--ok)}
+  .feedback-honeypot{position:absolute;inset-inline-start:-10000px;width:1px;height:1px;overflow:hidden}
+  .feedback-admin{position:absolute;top:9px;inset-inline-end:9px;z-index:10}
+  .feedback-admin summary{list-style:none;width:24px;height:24px;display:grid;place-items:center;cursor:pointer;color:var(--muted);
+    background:var(--soft);border:1px solid var(--border);border-radius:8px;transition:color .15s ease,border-color .15s ease}
+  .feedback-admin summary::-webkit-details-marker{display:none}
+  .feedback-admin summary::marker{content:""}
+  .feedback-admin summary:hover,.feedback-admin[open] summary{color:var(--accent);border-color:var(--accent)}
+  .feedback-admin summary svg{width:13px;height:13px}
+  .feedback-admin[open]{width:min(360px,calc(100vw - 32px));padding:12px;background:var(--card);border:1px solid var(--border);
+    border-radius:14px;box-shadow:var(--shadow-hover)}
+  .feedback-admin[open] summary{margin-inline-start:auto}
+  .feedback-admin p{color:var(--muted);font-size:.76rem}
+  .feedback-admin-controls{display:flex;gap:8px;align-items:center}
+  .feedback-admin-input{max-width:420px;padding:7px 10px}
+  .feedback-admin-list{display:grid;gap:8px;margin-top:12px}
+  .feedback-entry{padding:12px;border:1px solid var(--border);border-radius:12px;background:var(--soft)}
+  .feedback-entry-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:6px;color:var(--muted);font-size:.74rem}
+  .feedback-entry-message{margin:0;white-space:pre-wrap;overflow-wrap:anywhere}
+  .transfers{display:flex;flex-direction:column;gap:8px;margin-top:10px;overflow:auto;flex:1;min-height:0}
+  .item{background:var(--soft);border:1px solid var(--border);border-radius:12px;padding:9px 12px}
+  .item .name{font-size:.88rem;font-weight:600;word-break:break-all}
+  .item .meta{font-size:.74rem;color:var(--muted);margin:2px 0 7px}
+  .prog{height:6px;border-radius:6px;background:var(--border);overflow:hidden}
+  .prog i{display:block;height:100%;width:0;background:var(--accent);transition:width .15s}
+  .prog.done i{background:var(--ok)} .prog.bad i{background:var(--err)} .prog.pause i{background:var(--warn)}
+  .acts{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap}
+  .acts .btn{padding:3px 12px;font-size:.76rem}
+  .hint{font-size:.74rem;color:var(--muted);margin:10px 2px 0}
+
+  /* ---------- Connect / room sharing ---------- */
+  .connect{max-width:1180px;margin:0 auto;padding:8px 16px 4px}
+  .connect .card{padding:12px 16px;border-radius:16px;flex-direction:row;align-items:stretch;gap:16px}
+  .conn-half{flex:1;min-width:0;display:flex;flex-direction:column;gap:6px;justify-content:center}
+  .conn-sep{width:1px;background:var(--border);flex:none}
+  @media (max-width:700px){
+    .connect .card{flex-direction:column;gap:12px}
+    .conn-sep{width:auto;height:1px}
+  }
+  .label{font-size:.7rem;color:var(--muted)}
+  .code{width:max-content;padding:6px 12px;border:1px solid var(--border);border-radius:10px;background:var(--code-bg);
+    font-family:ui-monospace,Menlo,Consolas,monospace;font-size:1.25rem;letter-spacing:4px;font-weight:700;line-height:1.1}
+  .field{width:100%;background:var(--card);border:1px solid var(--border);color:var(--text);border-radius:8px;
+    padding:4px 10px;font-size:.72rem;font-family:ui-monospace,Menlo,Consolas,monospace;outline:none}
+  .field:focus{border-color:var(--accent)}
+  .row{display:flex;gap:6px;flex-wrap:wrap}
+  .connect .btn{padding:4px 10px;font-size:.76rem}
+  .join-row{display:flex;gap:6px;align-items:stretch}
+  #joinInput{flex:1;min-width:0;width:auto;font-size:.95rem;letter-spacing:3px;text-align:center;padding:5px 10px}
+
+  .toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom));transform:translate(-50%,20px);opacity:0;
+    background:var(--text);color:var(--bg);padding:8px 18px;border-radius:12px;font-size:.86rem;pointer-events:none;
+    transition:.25s;z-index:60;max-width:90vw;text-align:center}
+  .toast.show{opacity:1;transform:translate(-50%,0)}
+  .site-footer{max-width:1180px;margin:18px auto 0;padding:14px 16px 22px;border-top:1px solid var(--border);
+    display:flex;align-items:center;justify-content:space-between;gap:14px;color:var(--muted);font-size:.76rem}
+  .footer-note{margin:0}
+  .footer-settings{display:flex;align-items:center;gap:7px}
+  .footer-setting{display:inline-flex;align-items:center;gap:6px;padding:5px 7px;border:1px solid var(--border);border-radius:10px;
+    background:var(--card);color:var(--muted);transition:border-color .15s ease,background .15s ease}
+  .footer-setting:hover{border-color:var(--accent);background:var(--soft)}
+  .footer-setting svg{width:15px;height:15px;flex:none}
+  .footer-setting select{max-width:104px;border:0;outline:0;background:transparent;color:var(--text);font:inherit;cursor:pointer}
+  .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+  @media (max-width:620px){
+    .intro{margin:8px 12px;padding:20px;min-height:144px}
+    .hero-visual{width:110px;margin-inline-end:-8px}
+    .feedback-section{margin:14px 12px 0;padding:12px;grid-template-columns:1fr;gap:10px}
+    .feedback-copy{padding-inline-end:26px}
+    .feedback-admin-controls{flex-wrap:wrap}
+    .feedback-admin-input{flex:1;min-width:160px}
+    .site-footer{margin-top:12px;flex-wrap:wrap}
+    .footer-settings{margin-inline-start:auto}
+  }
+  @media (max-width:420px){.hero-visual{width:86px}.intro{gap:10px;padding:18px}.hero-kicker{font-size:.62rem}}
+  html[dir="rtl"] .code,html[dir="rtl"] #linkField,html[dir="rtl"] #joinInput,html[dir="rtl"] .stats b{direction:ltr;unicode-bidi:isolate}
+  ::-webkit-scrollbar{width:8px;height:8px}::-webkit-scrollbar-thumb{background:var(--border);border-radius:8px}
+  @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="brand"><span class="logo" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M8 11 15.8 6.8M8 13l7.8 4.2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="5.5" cy="12" r="2.5" fill="currentColor"/><circle cx="18" cy="6" r="2.5" fill="currentColor"/><circle cx="18" cy="18" r="2.5" fill="currentColor"/></svg></span><span>qsp Share</span><span class="muted" style="margin-inline-start:14px;font-weight:600">786</span></div>
+  <div class="pill" id="linkPill"><span class="dot"></span><span id="linkPillText">Starting…</span></div>
+</header>
+
+<section class="intro" aria-labelledby="pageTitle">
+  <div class="intro-copy">
+    <span class="hero-kicker" data-i18n="heroKicker">PRIVATE SHARING · NO ACCOUNT</span>
+    <h1 id="pageTitle" data-i18n="pageHeading">Share files and chat with a room code</h1>
+    <p data-i18n="pageIntro">Connect two devices in your browser. No account needed.</p>
+  </div>
+  <svg class="hero-visual" viewBox="0 0 220 160" fill="none" aria-hidden="true">
+    <path class="link" d="M76 80h68"/>
+    <circle class="node" cx="76" cy="80" r="5"/>
+    <circle class="node" cx="144" cy="80" r="5"/>
+    <rect class="device" x="20" y="54" width="56" height="46" rx="8"/>
+    <path class="device" d="M14 109h68l-6 7H20z"/>
+    <rect class="device" x="144" y="40" width="45" height="76" rx="10"/>
+    <path d="M160 107h13" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+    <circle cx="36" cy="42" r="4" fill="currentColor" opacity=".55"/>
+    <circle cx="185" cy="29" r="3" fill="currentColor" opacity=".7"/>
+  </svg>
+</section>
+
+<!-- ===== Room: Share / Join ===== -->
+<section class="connect" id="connect">
+  <div class="card">
+    <div class="conn-half">
+      <div class="label" data-i18n="yourRoomCode">Your room code</div>
+      <div class="code" id="roomCode" dir="ltr">------</div>
+      <input class="field" id="linkField" dir="ltr" readonly aria-label="Room link" data-i18n-aria="roomLink">
+      <div class="row">
+        <button class="btn primary" id="copyLinkBtn" data-i18n="copyLink">Copy link</button>
+        <button class="btn" id="copyCodeBtn" data-i18n="copyCode">Copy code</button>
+      </div>
+    </div>
+    <div class="conn-sep"></div>
+    <div class="conn-half">
+      <div class="label" data-i18n="joinAnotherRoom">Join another room</div>
+      <div class="join-row">
+        <input class="field" id="joinInput" dir="ltr" inputmode="numeric" maxlength="6" placeholder="123456" autocomplete="off" aria-label="Room code to join" data-i18n-aria="roomCodeToJoin">
+        <button class="btn primary" id="joinBtn" data-i18n="join">Join</button>
+      </div>
+      <span class="muted small" data-i18n="joinHint">Enter the 6-digit code from the other device</span>
+    </div>
+  </div>
+</section>
+
+<!-- ===== Chat + Files ===== -->
+<main class="layout">
+  <section class="card chat-card">
+    <div class="card-head">
+      <h2 data-i18n="chat">Chat</h2>
+      <span class="badge" id="liveBadge">Waiting for peer…</span>
+    </div>
+    <div class="chat-wrap">
+      <div class="chat" id="chatLog" aria-live="polite"></div>
+      <button class="jump" id="chatJump" hidden><span aria-hidden="true">↓ </span><span data-i18n="newMessages">New messages</span></button>
+    </div>
+    <div class="typing" id="typing" aria-live="polite"><span data-i18n="peerTyping">Peer is typing</span><i></i><i></i><i></i></div>
+    <div class="composer">
+      <textarea id="chatInput" rows="1" dir="auto" spellcheck="false" placeholder="Type a message or paste code…" data-i18n-placeholder="chatPlaceholder"></textarea>
+      <button class="btn primary" id="sendBtn" data-i18n="send">Send</button>
+    </div>
+    <div class="bar">
+      <span class="count" id="count">0 / 15000 bytes</span>
+      <span class="spacer"></span>
+      <button class="btn danger" id="clearBtn" data-i18n="clearChat">Clear chat</button>
+    </div>
+  </section>
+
+  <section class="card" id="filePanel">
+    <div class="card-head"><h2 data-i18n="files">Files</h2><span class="muted small" data-i18n="directP2P">Direct P2P · no cloud</span></div>
+    <div class="stats">
+      <div><span data-i18n="upload">↑ Upload</span><b id="stUp">0.00 MB/s</b></div>
+      <div><span data-i18n="download">↓ Download</span><b id="stDown">0.00 MB/s</b></div>
+      <div><span data-i18n="sent">Sent</span><b id="stSent">0 B</b></div>
+      <div><span data-i18n="received">Received</span><b id="stRecv">0 B</b></div>
+      <div class="full"><span data-i18n="route">Route</span><b id="stRoute">—</b></div>
+    </div>
+    <div class="drop" id="drop">
+      <div class="drop-ico">📂</div>
+      <div data-i18n="dropFiles">Drop files here</div>
+      <button class="btn primary" id="pickBtn" data-i18n="chooseFiles">Choose files</button>
+      <input type="file" id="fileInput" multiple hidden>
+    </div>
+    <div class="transfers" id="transfers"></div>
+    <p class="hint" data-i18n="transferHint">Keep both tabs open during transfer. If internet speed is slow, check Route above: “Relayed via server” means a TURN relay may be the bottleneck.</p>
+  </section>
+</main>
+
+<section class="feedback-section" id="feedback" aria-labelledby="feedbackTitle">
+  <div class="feedback-copy">
+    <span class="hero-kicker" data-i18n="feedbackKicker">HELP US IMPROVE</span>
+    <h2 id="feedbackTitle" data-i18n="feedbackTitle">Send feedback</h2>
+    <p data-i18n="feedbackIntro">No account needed. Your message is private and only the site owner can review it.</p>
+  </div>
+  <form class="feedback-form" id="feedbackForm">
+    <label class="feedback-label" for="feedbackMessage" data-i18n="feedbackLabel">Your feedback</label>
+    <textarea class="feedback-input" id="feedbackMessage" name="message" minlength="3" maxlength="2000" required
+      placeholder="Tell us what works well or what could be better…" data-i18n-placeholder="feedbackPlaceholder"></textarea>
+    <div class="feedback-honeypot" aria-hidden="true">
+      <label for="feedbackWebsite" data-i18n="feedbackLeaveEmpty">Leave this field empty</label>
+      <input id="feedbackWebsite" name="website" type="text" tabindex="-1" autocomplete="off">
+    </div>
+    <div class="feedback-actions">
+      <span class="feedback-counter" id="feedbackCounter">0 / 2000</span>
+      <button class="btn primary" id="feedbackSubmit" type="submit" data-i18n="feedbackSubmit">Send feedback</button>
+    </div>
+    <p class="feedback-status" id="feedbackFormStatus" role="status" aria-live="polite"></p>
+  </form>
+  <details class="feedback-admin" id="feedbackAdminDetails">
+    <summary aria-label="Owner: manage feedback" data-i18n-aria="feedbackAdminSummary">
+      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <rect x="5.5" y="10.5" width="13" height="10" rx="2" stroke="currentColor" stroke-width="1.7"/>
+        <path d="M8.5 10.5V7.8a3.5 3.5 0 0 1 7 0v2.7M12 14v3" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+      </svg>
+      <span class="sr-only" data-i18n="feedbackAdminSummary">Owner: manage feedback</span>
+    </summary>
+    <p data-i18n="feedbackAdminHint">Enter your private admin secret to review and delete submissions.</p>
+    <form id="feedbackAdminForm">
+      <label class="sr-only" for="feedbackAdminSecret" data-i18n="feedbackAdminLabel">Admin secret</label>
+      <div class="feedback-admin-controls">
+        <input class="feedback-admin-input" id="feedbackAdminSecret" type="password" minlength="32" maxlength="256"
+          autocomplete="off" placeholder="Enter your admin secret" data-i18n-placeholder="feedbackAdminPlaceholder">
+        <button class="btn primary" type="submit" data-i18n="feedbackUnlock">Unlock</button>
+        <button class="btn" id="feedbackLock" type="button" hidden data-i18n="feedbackLock">Lock</button>
+      </div>
+    </form>
+    <p class="feedback-status" id="feedbackAdminStatus" role="status" aria-live="polite"></p>
+    <div class="feedback-admin-list" id="feedbackAdminList"></div>
+  </details>
+</section>
+
+<footer class="site-footer">
+  <p class="footer-note" data-i18n="footerNote">Private, direct sharing · No account needed</p>
+  <div class="footer-settings" aria-label="Preferences" data-i18n-aria="preferences">
+    <label class="footer-setting">
+      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.7"/><path d="M3 12h18M12 3a15 15 0 0 1 0 18M12 3a15 15 0 0 0 0 18" stroke="currentColor" stroke-width="1.5"/></svg>
+      <span class="sr-only" data-i18n="language">Language</span>
+      <select id="languageSelect" aria-label="Interface language" data-i18n-aria="interfaceLanguage">
+        <option value="auto" data-i18n="auto">Auto</option><option value="en" data-i18n="english">English</option><option value="fa" data-i18n="persian">فارسی</option>
+      </select>
+    </label>
+    <label class="footer-setting">
+      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M20.2 15.1A8.3 8.3 0 0 1 8.9 3.8 8.5 8.5 0 1 0 20.2 15.1Z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span class="sr-only" data-i18n="theme">Theme</span>
+      <select id="themeSelect" aria-label="Color theme" data-i18n-aria="colorTheme">
+        <option value="system" data-i18n="system">System</option><option value="light" data-i18n="light">Light</option><option value="dark" data-i18n="dark">Dark</option>
+      </select>
+    </label>
+  </div>
+</footer>
+
+<div class="toast" id="toast"></div>
+
+<script>
+(() => {
+'use strict';
+
+/* =====================================================================
+ * qsp Share — single-file app
+ *  1. CONFIG   2. UTILS   3. RELAY   4. PEER LINK   5. METER
+ *  6. SINKS    7. TEXT SYNC   8. FILE TRANSFER   9. UI   10. BOOTSTRAP
+ * ===================================================================== */
+
+/* ============================== 1. CONFIG ============================== */
+const CONFIG = {
+  relayUrl: 'wss://qsp-raley.afghanbadboy619.workers.dev',
+  feedbackApiUrl: 'https://qsp-share-feedback.afghanbadboy619.workers.dev',
+  iceServers: [
+    { urls: ['stun:stun.l.google.com:19302', 'stun:stun1.l.google.com:19302'] },
+    { urls: 'stun:stun.cloudflare.com:3478' },
+    // TURN is a last resort: ICE prefers direct paths and only uses it when nothing else works.
+    {
+      urls: ['turn:free.expressturn.com:3478', 'turns:free.expressturn.com:443?transport=tcp'],
+      username: '000000002109243825',
+      credential: 'BtkQ4PoigKOZ1Axm6r049tfemR0='
+    }
+  ],
+  maxTextBytes: 15000,
+  relayChunkBytes: 2800,
+  chunkSize: 256 * 1024,                   // bytes per data-channel message (Chrome's max is 256 KB)
+  readBlock: 8 * 1024 * 1024,              // bytes read from disk at once by the sender (next block is prefetched)
+  bufferHigh: 12 * 1024 * 1024,            // pause sending when the channel buffer exceeds this
+  bufferLow: 4 * 1024 * 1024,              // resume when it falls below this (keeps the pipe full)
+  window: 48 * 1024 * 1024,                // max un-acknowledged bytes in flight
+  ackEvery: 4 * 1024 * 1024,               // receiver acknowledges every N written bytes
+  writeBatch: 2 * 1024 * 1024,             // receiver merges chunks into blocks this big before writing to disk
+  negotiationTimeoutMs: 20000,
+  memoryWarnBytes: 1.5 * 1024 ** 3
+};
+const MAX_AUTO_ACCEPT_FILES = 1000;
+
+const UI_STRINGS = {
+  en: {
+    documentTitle: 'Share files and chat privately | qsp Share',
+    language: 'Language', theme: 'Theme', preferences: 'Preferences', interfaceLanguage: 'Interface language', colorTheme: 'Color theme',
+    auto: 'Auto', english: 'English', persian: 'Persian', system: 'System', light: 'Light', dark: 'Dark',
+    heroKicker: 'PRIVATE SHARING · NO ACCOUNT',
+    pageHeading: 'Share files and chat with a room code',
+    pageIntro: 'Connect two devices in your browser. No account needed.',
+    feedbackKicker: 'HELP US IMPROVE',
+    feedbackTitle: 'Send feedback',
+    feedbackIntro: 'No account needed. Your message is private and only the site owner can review it.',
+    feedbackLabel: 'Your feedback',
+    feedbackPlaceholder: 'Tell us what works well or what could be better…',
+    feedbackSubmit: 'Send feedback',
+    feedbackSending: 'Sending feedback…',
+    feedbackThanks: 'Thanks for your feedback. It was sent privately.',
+    feedbackSendError: 'Could not send feedback. Check your connection and try again.',
+    feedbackInvalid: 'Feedback must be between 3 and 2000 characters.',
+    feedbackCounter: '{current} / {max}',
+    feedbackLeaveEmpty: 'Leave this field empty',
+    feedbackAdminSummary: 'Owner: manage feedback',
+    feedbackAdminHint: 'Enter your private admin secret to review and delete submissions.',
+    feedbackAdminLabel: 'Admin secret',
+    feedbackAdminPlaceholder: 'Enter your admin secret',
+    feedbackUnlock: 'Unlock', feedbackLock: 'Lock',
+    feedbackSecretRequired: 'Enter the admin secret.',
+    feedbackAdminLoaded: 'Loaded {count} feedback items.',
+    feedbackAdminEmpty: 'No feedback to review yet.',
+    feedbackAdminLoadError: 'Could not load feedback. Check the service and your admin secret.',
+    feedbackAdminInvalid: 'The admin secret was not accepted.',
+    feedbackDelete: 'Delete',
+    feedbackDeleteConfirm: 'Delete this feedback permanently?',
+    feedbackDeleted: 'Feedback deleted.',
+    feedbackDeleteError: 'Could not delete feedback. Please try again.',
+    feedbackEntryDate: 'Received {date}',
+    feedbackServiceOffline: 'Feedback service is not available yet. Try again later.',
+    feedbackRateLimit: 'Too many submissions. Try again later.',
+    feedbackNetworkError: 'Could not reach the feedback service. Check your connection and try again.',
+    feedbackAdminNotConfigured: 'The feedback admin secret is not configured on the server.',
+    feedbackSpam: 'Submission was not accepted.',
+    footerNote: 'Private, direct sharing · No account needed',
+    yourRoomCode: 'Your room code', roomLink: 'Room link', copyLink: 'Copy link', copyCode: 'Copy code',
+    joinAnotherRoom: 'Join another room', roomCodeToJoin: 'Room code to join', join: 'Join',
+    joinHint: 'Enter the 6-digit code from the other device',
+    chat: 'Chat', waitingForPeer: 'Waiting for peer…', newMessages: 'New messages',
+    peerTyping: 'Peer is typing', chatPlaceholder: 'Type a message or paste code…', send: 'Send',
+    byteCounter: '{current} / {max} bytes', clearChat: 'Clear chat',
+    files: 'Files', directP2P: 'Direct P2P · no cloud', upload: '↑ Upload', download: '↓ Download',
+    sent: 'Sent', received: 'Received', route: 'Route', dropFiles: 'Drop files here',
+    chooseFiles: 'Choose files',
+    transferHint: 'Keep both tabs open during transfer. If internet speed is slow, check Route above: “Relayed via server” means a TURN relay may be the bottleneck.',
+    copied: 'Copied ✓', messageNotDelivered: 'Message not delivered — check your connection',
+    messageLimitReached: 'Message limit reached ({max} bytes)', chatClearedByPeer: 'Chat cleared by the other device',
+    copy: 'Copy', chatEmpty: 'No messages yet. Say hello 👋', liveP2P: 'Live · P2P connected',
+    waitingPeerRelay: 'Waiting for peer… (relay fallback)', connectPeerFirst: 'Connect to a peer first',
+    largeFileConfirm: 'This browser must keep the whole file in memory. Large files may crash the tab. Continue?',
+    cannotChooseFolder: 'Cannot choose folder: {error}', cannotAcceptBatch: 'Could not accept batch: {error}',
+    cannotSaveFile: 'Cannot save file: {error}', couldNotAcceptFile: 'Could not accept file: {error}',
+    incomingFileToast: 'Incoming file: {name}', receivedFileToast: 'Received: {name}',
+    queued: 'Queued', finishing: 'Finishing…', connectionLost: 'Connection lost — will resume automatically',
+    waitingAccept: 'Waiting for the other device to accept…',
+    incomingBatchFile: 'Incoming file {index} of {count} · {total} total',
+    incomingFile: 'Incoming file — accept to start', paused: 'Paused', sending: 'Sending…',
+    receiving: 'Receiving…', receivedReady: 'Received — ready to save', receivedSaved: 'Received and saved ✓',
+    sentDone: 'Sent ✓', declinedByPeer: 'Declined by the other device', declined: 'Declined',
+    cancelled: 'Cancelled', failed: 'Failed: {error}', unknownError: 'unknown error',
+    fileProgress: '{label} · {done} of {total} · {percent}%',
+    acceptAllToFolder: 'Accept all to folder', thisFileOnly: 'This file only',
+    acceptSave: 'Accept & save', decline: 'Decline', pause: 'Pause', resume: 'Resume',
+    cancel: 'Cancel', saveFile: 'Save file', dismiss: 'Dismiss',
+    routeSameNetwork: 'Direct (same network)', routeInternet: 'Direct (Internet)',
+    routeRelay: 'Relayed via server — slower', routeUnknown: '—',
+    enterSixDigitCode: 'Enter a 6-digit code', joinedRoom: 'Joined room {code}',
+    signalingOffline: 'Signaling offline', connectingPeer: 'Connecting to peer…',
+    waitingDevice: 'Waiting for the other device…', connectedP2P: 'Connected · P2P',
+    sendBlocked: 'Send blocked: {error}', signalingSendFailed: 'Signaling send failed: {error}',
+    directConnectionFail: 'Direct connection keeps failing — your network may block P2P.',
+    peerDisconnected: 'Peer disconnected — reconnecting…', connectedToast: 'Connected to peer ✓'
+  },
+  fa: {
+    documentTitle: 'ارسال فایل و گفتگوی خصوصی | qsp Share',
+    language: 'زبان', theme: 'پوسته', preferences: 'تنظیمات', interfaceLanguage: 'زبان رابط کاربری', colorTheme: 'پوسته رنگی',
+    auto: 'خودکار', english: 'انگلیسی', persian: 'فارسی', system: 'سیستم', light: 'روشن', dark: 'تیره',
+    heroKicker: 'اشتراک‌گذاری خصوصی · بدون نیاز به حساب',
+    pageHeading: 'با کد اتاق فایل بفرستید و گفتگو کنید',
+    pageIntro: 'دو دستگاه را در مرورگر به هم وصل کنید. بدون نیاز به حساب.',
+    feedbackKicker: 'به بهبود ما کمک کنید',
+    feedbackTitle: 'ارسال بازخورد',
+    feedbackIntro: 'بدون نیاز به حساب. پیام شما خصوصی است و فقط مدیر سایت می‌تواند آن را ببیند.',
+    feedbackLabel: 'نظر یا پیشنهاد شما',
+    feedbackPlaceholder: 'چه چیزی خوب است یا چه چیزی را می‌توان بهتر کرد؟',
+    feedbackSubmit: 'ارسال بازخورد',
+    feedbackSending: 'در حال ارسال بازخورد…',
+    feedbackThanks: 'از بازخورد شما سپاسگزاریم. پیام به‌صورت خصوصی ارسال شد.',
+    feedbackSendError: 'بازخورد ارسال نشد. اتصال را بررسی کنید و دوباره تلاش کنید.',
+    feedbackInvalid: 'بازخورد باید بین ۳ تا ۲۰۰۰ نویسه باشد.',
+    feedbackCounter: '{current} از {max}',
+    feedbackLeaveEmpty: 'این کادر را خالی بگذارید',
+    feedbackAdminSummary: 'مدیریت بازخورد (ویژه مدیر)',
+    feedbackAdminHint: 'برای دیدن و حذف پیام‌ها، رمز محرمانه مدیر را وارد کنید.',
+    feedbackAdminLabel: 'رمز مدیر',
+    feedbackAdminPlaceholder: 'رمز محرمانه مدیر را وارد کنید',
+    feedbackUnlock: 'باز کردن', feedbackLock: 'قفل',
+    feedbackSecretRequired: 'رمز مدیر را وارد کنید.',
+    feedbackAdminLoaded: '{count} بازخورد بارگذاری شد.',
+    feedbackAdminEmpty: 'هنوز بازخوردی برای بررسی نیست.',
+    feedbackAdminLoadError: 'بازخوردها بارگذاری نشدند. سرویس و رمز مدیر را بررسی کنید.',
+    feedbackAdminInvalid: 'رمز مدیر پذیرفته نشد.',
+    feedbackDelete: 'حذف',
+    feedbackDeleteConfirm: 'این بازخورد برای همیشه حذف شود؟',
+    feedbackDeleted: 'بازخورد حذف شد.',
+    feedbackDeleteError: 'بازخورد حذف نشد. دوباره تلاش کنید.',
+    feedbackEntryDate: 'دریافت‌شده {date}',
+    feedbackServiceOffline: 'سرویس بازخورد هنوز در دسترس نیست. بعداً دوباره تلاش کنید.',
+    feedbackRateLimit: 'تعداد ارسال‌ها زیاد است. بعداً دوباره تلاش کنید.',
+    feedbackNetworkError: 'ارتباط با سرویس بازخورد برقرار نشد. اتصال را بررسی و دوباره تلاش کنید.',
+    feedbackAdminNotConfigured: 'رمز مدیر بازخورد در سرور تنظیم نشده است.',
+    feedbackSpam: 'پیام پذیرفته نشد.',
+    footerNote: 'اشتراک‌گذاری خصوصی و مستقیم · بدون نیاز به حساب',
+    yourRoomCode: 'کد اتاق شما', roomLink: 'پیوند اتاق', copyLink: 'کپی پیوند', copyCode: 'کپی کد',
+    joinAnotherRoom: 'پیوستن به اتاق دیگر', roomCodeToJoin: 'کد اتاق برای پیوستن', join: 'پیوستن',
+    joinHint: 'کد ۶ رقمی دستگاه دیگر را وارد کنید',
+    chat: 'گفتگو', waitingForPeer: 'در انتظار دستگاه دیگر…', newMessages: 'پیام‌های جدید',
+    peerTyping: 'دستگاه مقابل در حال نوشتن است', chatPlaceholder: 'پیام بنویسید یا کدی را جای‌گذاری کنید…',
+    send: 'ارسال', byteCounter: '{current} از {max} بایت', clearChat: 'پاک کردن گفتگو',
+    files: 'فایل‌ها', directP2P: 'ارتباط مستقیم همتا‌به‌همتا · بدون فضای ابری',
+    upload: '↑ بارگذاری', download: '↓ دریافت', sent: 'ارسال‌شده', received: 'دریافت‌شده',
+    route: 'مسیر', dropFiles: 'فایل‌ها را اینجا رها کنید', chooseFiles: 'انتخاب فایل‌ها',
+    transferHint: 'هنگام انتقال هر دو زبانه را باز نگه دارید. اگر سرعت اینترنت پایین است، مسیر بالا را بررسی کنید؛ «از طریق رله سرور» ممکن است گلوگاه باشد.',
+    copied: 'کپی شد ✓', messageNotDelivered: 'پیام ارسال نشد — اتصال را بررسی کنید',
+    messageLimitReached: 'محدودیت پیام به {max} بایت رسید', chatClearedByPeer: 'دستگاه دیگر گفتگو را پاک کرد',
+    copy: 'کپی', chatEmpty: 'هنوز پیامی نیست. سلام کنید 👋', liveP2P: 'متصل · همتا‌به‌همتا',
+    waitingPeerRelay: 'در انتظار دستگاه دیگر… (اتصال رله‌ای جایگزین)', connectPeerFirst: 'ابتدا به دستگاه دیگری وصل شوید',
+    largeFileConfirm: 'مرورگر باید کل فایل را در حافظه نگه دارد. فایل‌های بزرگ ممکن است باعث بسته شدن زبانه شوند. ادامه می‌دهید؟',
+    cannotChooseFolder: 'انتخاب پوشه ممکن نیست: {error}', cannotAcceptBatch: 'پذیرش گروه فایل ممکن نشد: {error}',
+    cannotSaveFile: 'ذخیره فایل ممکن نیست: {error}', couldNotAcceptFile: 'پذیرش فایل ممکن نشد: {error}',
+    incomingFileToast: 'فایل ورودی: {name}', receivedFileToast: 'دریافت شد: {name}',
+    queued: 'در صف', finishing: 'در حال نهایی‌سازی…',
+    connectionLost: 'اتصال قطع شد — انتقال خودکار ادامه می‌یابد',
+    waitingAccept: 'در انتظار پذیرش دستگاه دیگر…',
+    incomingBatchFile: 'فایل {index} از {count} · مجموع {total}',
+    incomingFile: 'فایل ورودی — برای شروع بپذیرید', paused: 'متوقف‌شده', sending: 'در حال ارسال…',
+    receiving: 'در حال دریافت…', receivedReady: 'دریافت شد — آماده ذخیره', receivedSaved: 'دریافت و ذخیره شد ✓',
+    sentDone: 'ارسال شد ✓', declinedByPeer: 'دستگاه دیگر نپذیرفت', declined: 'رد شد',
+    cancelled: 'لغو شد', failed: 'ناموفق: {error}', unknownError: 'خطای نامشخص',
+    fileProgress: '{label} · {done} از {total} · {percent}٪',
+    acceptAllToFolder: 'پذیرش همه در پوشه', thisFileOnly: 'فقط این فایل',
+    acceptSave: 'پذیرش و ذخیره', decline: 'رد کردن', pause: 'مکث', resume: 'ادامه',
+    cancel: 'لغو', saveFile: 'ذخیره فایل', dismiss: 'بستن',
+    routeSameNetwork: 'مستقیم (شبکه محلی)', routeInternet: 'مستقیم (اینترنت)',
+    routeRelay: 'از طریق رله سرور — کندتر', routeUnknown: '—',
+    enterSixDigitCode: 'کد ۶ رقمی را وارد کنید', joinedRoom: 'به اتاق {code} پیوستید',
+    signalingOffline: 'سیگنال‌دهی آفلاین', connectingPeer: 'در حال اتصال به دستگاه…',
+    waitingDevice: 'در انتظار دستگاه دیگر…', connectedP2P: 'متصل · همتا‌به‌همتا',
+    sendBlocked: 'ارسال مسدود شد: {error}', signalingSendFailed: 'ارسال سیگنال ناموفق بود: {error}',
+    directConnectionFail: 'اتصال مستقیم برقرار نمی‌شود — ممکن است شبکه شما ارتباط همتا‌به‌همتا را مسدود کند.',
+    peerDisconnected: 'دستگاه مقابل قطع شد — اتصال دوباره…', connectedToast: 'به دستگاه متصل شدید ✓'
+  }
+};
+
+let currentLanguage = 'en';
+let languagePreference = 'auto';
+let themePreference = 'system';
+function tr(key, values = {}) {
+  const phrase = UI_STRINGS[currentLanguage][key] || UI_STRINGS.en[key] || key;
+  return phrase.replace(/\{(\w+)\}/g, (match, name) =>
+    Object.prototype.hasOwnProperty.call(values, name) ? String(values[name]) : match);
+}
+function formatDigits(value) {
+  const text = String(value);
+  return currentLanguage === 'fa' ? text.replace(/\d/g, digit => '۰۱۲۳۴۵۶۷۸۹'[Number(digit)]) : text;
+}
+function normalizeDigits(value) {
+  return value.replace(/[۰-۹٠-٩]/g, digit => String('۰۱۲۳۴۵۶۷۸۹٠١٢٣٤٥٦٧٨٩'.indexOf(digit) % 10));
+}
+function readPreference(key, allowed, fallback) {
+  try {
+    const value = localStorage.getItem(key);
+    return allowed.includes(value) ? value : fallback;
+  } catch (e) {
+    console.warn('Could not read preference:', e);
+    return fallback;
+  }
+}
+function savePreference(key, value) {
+  try { localStorage.setItem(key, value); }
+  catch (e) { console.warn('Could not save preference:', e); }
+}
+function detectLanguage() {
+  const languages = navigator.languages && navigator.languages.length ? navigator.languages : [navigator.language || 'en'];
+  return /^fa(?:-|$)/i.test(String(languages[0]).replace('_', '-')) ? 'fa' : 'en';
+}
+function applyLanguage(language) {
+  currentLanguage = language;
+  const isPersian = language === 'fa';
+  document.documentElement.lang = isPersian ? 'fa' : 'en';
+  document.documentElement.dir = isPersian ? 'rtl' : 'ltr';
+  document.title = tr('documentTitle');
+  document.querySelectorAll('[data-i18n]').forEach(el => { el.textContent = tr(el.dataset.i18n); });
+  document.querySelectorAll('[data-i18n-placeholder]').forEach(el => { el.placeholder = tr(el.dataset.i18nPlaceholder); });
+  document.querySelectorAll('[data-i18n-aria]').forEach(el => { el.setAttribute('aria-label', tr(el.dataset.i18nAria)); });
+  document.dispatchEvent(new CustomEvent('qsp:languagechange', { detail: { language } }));
+}
+function applyTheme(mode) {
+  const dark = mode === 'dark' || (mode === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+  if (mode === 'system') document.documentElement.removeAttribute('data-theme');
+  else document.documentElement.dataset.theme = mode;
+  document.documentElement.style.colorScheme = dark ? 'dark' : 'light';
+}
+function setupPreferences() {
+  const languages = ['auto', 'en', 'fa'], themes = ['system', 'light', 'dark'];
+  languagePreference = readPreference('qsp.language', languages, 'auto');
+  themePreference = readPreference('qsp.theme', themes, 'system');
+  const languageSelect = $('#languageSelect'), themeSelect = $('#themeSelect');
+  languageSelect.value = languagePreference; themeSelect.value = themePreference;
+  languageSelect.addEventListener('change', () => {
+    languagePreference = languages.includes(languageSelect.value) ? languageSelect.value : 'auto';
+    savePreference('qsp.language', languagePreference);
+    applyLanguage(languagePreference === 'auto' ? detectLanguage() : languagePreference);
+  });
+  themeSelect.addEventListener('change', () => {
+    themePreference = themes.includes(themeSelect.value) ? themeSelect.value : 'system';
+    savePreference('qsp.theme', themePreference); applyTheme(themePreference);
+  });
+  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+    if (themePreference === 'system') applyTheme('system');
+  });
+  applyTheme(themePreference);
+  applyLanguage(languagePreference === 'auto' ? detectLanguage() : languagePreference);
+}
+
+/* ============================== 2. UTILS ============================== */
+const $ = (sel, root = document) => root.querySelector(sel);
+const enc = new TextEncoder();
+const byteLen = s => enc.encode(s).length;
+
+function uid(n = 8) {
+  const a = new Uint8Array(n); crypto.getRandomValues(a);
+  return Array.from(a, b => 'abcdefghijklmnopqrstuvwxyz0123456789'[b % 36]).join('');
+}
+function fmtBytes(n) {
+  const u = ['B', 'KB', 'MB', 'GB', 'TB']; let i = 0;
+  while (n >= 1024 && i < u.length - 1) { n /= 1024; i++; }
+  return formatDigits((i === 0 ? n.toFixed(0) : n.toFixed(n >= 100 ? 0 : 1))) + ' ' + u[i];
+}
+const fmtSpeed = bps => formatDigits((bps / 1048576).toFixed(2)) + ' MB/s';
+
+function truncateToBytes(str, max) {
+  if (byteLen(str) <= max) return str;
+  let out = '', n = 0;
+  for (const ch of str) { const b = byteLen(ch); if (n + b > max) break; out += ch; n += b; }
+  return out;
+}
+function splitByBytes(str, max) {
+  const parts = []; let cur = '', n = 0;
+  for (const ch of str) {
+    const b = byteLen(ch);
+    if (n + b > max) { parts.push(cur); cur = ''; n = 0; }
+    cur += ch; n += b;
+  }
+  parts.push(cur);
+  return parts;
+}
+
+class Emitter {
+  constructor() { this._h = new Map(); }
+  on(ev, fn) { if (!this._h.has(ev)) this._h.set(ev, []); this._h.get(ev).push(fn); return this; }
+  emit(ev, ...args) {
+    for (const fn of (this._h.get(ev) || [])) { try { fn(...args); } catch (e) { console.error(e); } }
+  }
+}
+
+let toastTimer;
+function toast(msg) {
+  const t = $('#toast'); t.textContent = msg; t.classList.add('show');
+  clearTimeout(toastTimer); toastTimer = setTimeout(() => t.classList.remove('show'), 2200);
+}
+async function copyText(text) {
+  try { await navigator.clipboard.writeText(text); }
+  catch (e) {
+    const ta = document.createElement('textarea'); ta.value = text; ta.style.cssText = 'position:fixed;opacity:0';
+    document.body.appendChild(ta); ta.select(); try { document.execCommand('copy'); } catch (_) {} ta.remove();
+  }
+  toast(tr('copied'));
+}
+
+/* ============================== 3. RELAY ============================== */
+class Relay extends Emitter {
+  constructor() {
+    super();
+    this.room = null; this.ws = null; this.retry = null; this.ping = null;
+    this.online = false; this.fails = 0;
+  }
+  join(room) { this.leave(); this.room = room; this.fails = 0; this._open(); }
+  leave() {
+    clearTimeout(this.retry); clearInterval(this.ping);
+    if (this.ws) {
+      const w = this.ws; this.ws = null;
+      w.onopen = w.onmessage = w.onerror = w.onclose = null;
+      try { w.close(); } catch (e) { /* ignore */ }
+    }
+    this.online = false;
+  }
+  _open() {
+    const base = String(CONFIG.relayUrl || '');
+    if (!/^wss?:\/\//.test(base) || base.includes('YOUR-WORKER')) {
+      this.emit('status', 'offline');
+      this.emit('pub-error', 'relay URL is not set (CONFIG.relayUrl)');
+      return;
+    }
+    this.emit('status', 'connecting');
+    let ws;
+    try { ws = new WebSocket(`${base.replace(/\/+$/, '')}/room/${this.room}`); }
+    catch (e) { this.retry = setTimeout(() => this._open(), 3000); return; }
+    this.ws = ws;
+    ws.onopen = () => {
+      this.fails = 0; this.online = true; this.emit('status', 'online');
+      clearInterval(this.ping);
+      this.ping = setInterval(() => { try { ws.send('ping'); } catch (e) { /* ignore */ } }, 25000);
+    };
+    ws.onmessage = e => {
+      if (typeof e.data !== 'string' || e.data === 'pong') return;
+      try { this.emit('message', JSON.parse(e.data)); } catch (err) { /* ignore malformed */ }
+    };
+    ws.onclose = () => {
+      if (this.ws !== ws) return;
+      this.online = false; clearInterval(this.ping); this.emit('status', 'offline');
+      this.retry = setTimeout(() => this._open(), Math.min(15000, 1000 + this.fails++ * 1500));
+    };
+    ws.onerror = () => { /* onclose handles the retry */ };
+  }
+  async publish(obj) {
+    const ws = this.ws;
+    if (!ws || ws.readyState !== 1) { this.emit('pub-error', 'not connected to the relay'); throw new Error('relay offline'); }
+    ws.send(JSON.stringify(obj));
+  }
+}
+
+/* ============================ 4. PEER LINK ============================ */
+class PeerLink extends Emitter {
+  constructor(relay, selfId) {
+    super();
+    this.relay = relay; this.selfId = selfId;
+    this.state = 'idle';
+    this.pc = null; this.text = null; this.file = null;
+    this.remoteId = null; this.ses = null; this.remoteSet = false;
+    this.pendingIce = []; this.earlyIce = []; this.iceOut = [];
+    this.helloTimer = null; this.helloCount = 0; this.failCount = 0;
+    this.negTimer = null; this.discTimer = null; this.iceTimer = null;
+    relay.on('message', m => this._onSignal(m));
+    relay.on('status', s => { if (s === 'online') this.announce(); });
+  }
+  get isOpen() {
+    return !!(this.state === 'connected' && this.text && this.file &&
+      this.text.readyState === 'open' && this.file.readyState === 'open');
+  }
+  get maxMessageSize() { return this.pc && this.pc.sctp ? this.pc.sctp.maxMessageSize : 0; }
+  _setState(s) { if (this.state !== s) { this.state = s; this.emit('state', s); } }
+
+  sendText(obj) { if (this.text && this.text.readyState === 'open') this.text.send(JSON.stringify(obj)); }
+  sendFileCtrl(obj) { if (this.file && this.file.readyState === 'open') this.file.send(JSON.stringify(obj)); }
+
+  announce() {
+    clearTimeout(this.helloTimer);
+    if (this.state !== 'idle' || !this.relay.online) return;
+    this._sendSig({ t: 'hello' });
+    const delay = Math.min(20000, 3000 + this.helloCount++ * 2000);
+    this.helloTimer = setTimeout(() => this.announce(), delay);
+  }
+  bye() {
+    if (this.remoteId) {
+      this.relay.publish({ k: 'sig', t: 'bye', from: this.selfId, to: this.remoteId }).catch(() => {});
+    }
+  }
+  reset() {
+    this._teardown('reset', false, true);
+    this.helloCount = 0; this.failCount = 0;
+  }
+
+  _sendSig(obj) { this.relay.publish({ k: 'sig', from: this.selfId, ...obj }).catch(() => {}); }
+  _onSignal(m) {
+    if (m.k !== 'sig' || m.from === this.selfId) return;
+    if (m.to && m.to !== this.selfId) return;
+    switch (m.t) {
+      case 'hello': this._onHello(m); break;
+      case 'offer': this._onOffer(m); break;
+      case 'answer': this._onAnswer(m); break;
+      case 'ice': this._onIce(m); break;
+      case 'bye': if (m.from === this.remoteId) this._teardown('peer left'); break;
+    }
+  }
+  _onHello(m) {
+    if (this.state !== 'idle') return;
+    if (!m.re) this._sendSig({ t: 'hello', re: true, to: m.from });
+    if (this.selfId < m.from) this._startOffer(m.from);
+  }
+  async _startOffer(remoteId) {
+    this._setState('negotiating');
+    this.remoteId = remoteId; this.ses = uid(6);
+    this._createPc(); this._armNegTimer();
+    const pc = this.pc;
+    try {
+      await pc.setLocalDescription(await pc.createOffer());
+      if (this.pc !== pc) return;
+      this._sendSig({ t: 'offer', to: remoteId, ses: this.ses, sdp: pc.localDescription.sdp });
+    } catch (e) { if (this.pc === pc) this._teardown('offer failed', true); }
+  }
+  async _onOffer(m) {
+    if (this.state !== 'idle') return;
+    this._setState('negotiating');
+    this.remoteId = m.from; this.ses = m.ses;
+    for (const e of this.earlyIce) if (e.ses === m.ses) this.pendingIce.push(...e.c);
+    this.earlyIce = [];
+    this._createPc(); this._armNegTimer();
+    const pc = this.pc;
+    try {
+      await pc.setRemoteDescription({ type: 'offer', sdp: m.sdp });
+      this._flushIce();
+      await pc.setLocalDescription(await pc.createAnswer());
+      if (this.pc !== pc) return;
+      this._sendSig({ t: 'answer', to: m.from, ses: m.ses, sdp: pc.localDescription.sdp });
+    } catch (e) { if (this.pc === pc) this._teardown('answer failed', true); }
+  }
+  async _onAnswer(m) {
+    if (!this.pc || m.ses !== this.ses || this.pc.signalingState !== 'have-local-offer') return;
+    const pc = this.pc;
+    try { await pc.setRemoteDescription({ type: 'answer', sdp: m.sdp }); this._flushIce(); }
+    catch (e) { if (this.pc === pc) this._teardown('answer rejected', true); }
+  }
+  _onIce(m) {
+    if (!this.pc || m.ses !== this.ses) {
+      if (this.earlyIce.length < 40) this.earlyIce.push({ ses: m.ses, c: m.c });
+      return;
+    }
+    for (const c of m.c) {
+      if (this.remoteSet) this.pc.addIceCandidate(c).catch(() => {});
+      else this.pendingIce.push(c);
+    }
+  }
+  _flushIce() {
+    this.remoteSet = true;
+    for (const c of this.pendingIce.splice(0)) this.pc.addIceCandidate(c).catch(() => {});
+  }
+  _queueIce(c) {
+    this.iceOut.push(c);
+    if (this.iceTimer) return;
+    this.iceTimer = setTimeout(() => {
+      this.iceTimer = null;
+      const list = this.iceOut.splice(0);
+      for (let i = 0; i < list.length && this.remoteId; i += 8) {
+        this._sendSig({ t: 'ice', to: this.remoteId, ses: this.ses, c: list.slice(i, i + 8) });
+      }
+    }, 150);
+  }
+  _armNegTimer() {
+    clearTimeout(this.negTimer);
+    this.negTimer = setTimeout(() => { if (this.state === 'negotiating') this._teardown('negotiation timeout', true); }, CONFIG.negotiationTimeoutMs);
+  }
+
+  _createPc() {
+    const pc = new RTCPeerConnection({ iceServers: CONFIG.iceServers });
+    this.pc = pc; this.remoteSet = false; this.pendingIce = []; this.iceOut = [];
+    pc.onicecandidate = e => { if (e.candidate) this._queueIce(e.candidate.toJSON()); };
+    pc.onconnectionstatechange = () => {
+      const s = pc.connectionState;
+      if (s === 'failed') this._teardown('connection failed', true);
+      else if (s === 'disconnected') {
+        clearTimeout(this.discTimer);
+        this.discTimer = setTimeout(() => { if (this.pc === pc && pc.connectionState === 'disconnected') this._teardown('connection lost', true); }, 6000);
+      } else clearTimeout(this.discTimer);
+    };
+    this.text = pc.createDataChannel('text', { negotiated: true, id: 0 });
+    this.file = pc.createDataChannel('file', { negotiated: true, id: 1 });
+    this.file.binaryType = 'arraybuffer';
+    this.file.bufferedAmountLowThreshold = CONFIG.bufferLow;
+    this.text.onmessage = e => this.emit('text-message', e.data);
+    this.file.onmessage = e => this.emit('file-message', e.data);
+    const check = () => {
+      if (this.state !== 'connected' && this.text.readyState === 'open' && this.file.readyState === 'open') {
+        clearTimeout(this.negTimer); clearTimeout(this.helloTimer);
+        this.failCount = 0; this.helloCount = 0;
+        this._setState('connected');
+        this.emit('open');
+        setTimeout(() => this._detectRoute(), 800);
+      }
+    };
+    for (const ch of [this.text, this.file]) {
+      ch.onopen = check;
+      ch.onclose = () => { if (this.state === 'connected') this._teardown('channel closed'); };
+    }
+  }
+  async _detectRoute() {
+    try {
+      const pc = this.pc; if (!pc) return;
+      const stats = await pc.getStats(); let pair = null;
+      stats.forEach(r => { if (r.type === 'transport' && r.selectedCandidatePairId) pair = stats.get(r.selectedCandidatePairId); });
+      if (!pair) stats.forEach(r => { if (r.type === 'candidate-pair' && r.nominated && r.state === 'succeeded') pair = r; });
+      const local = pair && stats.get(pair.localCandidateId);
+      const remote = pair && stats.get(pair.remoteCandidateId);
+      if (local) this.emit('route', (local.candidateType === 'relay' || (remote && remote.candidateType === 'relay')) ? 'relay' : local.candidateType);
+    } catch (e) { /* stats not available */ }
+  }
+
+  _teardown(reason, failed = false, silent = false) {
+    const wasConnected = this.state === 'connected';
+    clearTimeout(this.negTimer); clearTimeout(this.discTimer); clearTimeout(this.iceTimer); clearTimeout(this.helloTimer);
+    this.iceTimer = null;
+    const pc = this.pc;
+    if (pc) {
+      pc.onicecandidate = null; pc.onconnectionstatechange = null;
+      for (const ch of [this.text, this.file]) if (ch) { ch.onopen = null; ch.onclose = null; ch.onmessage = null; }
+      try { pc.close(); } catch (e) { /* ignore */ }
+    }
+    this.pc = this.text = this.file = null;
+    this.remoteId = null; this.ses = null; this.remoteSet = false;
+    this.pendingIce = []; this.iceOut = [];
+    this._setState('idle');
+    if (wasConnected) this.emit('close', reason);
+    if (failed) { this.failCount++; this.emit('fail', this.failCount); }
+    if (!silent) this.helloTimer = setTimeout(() => this.announce(), 1000 + this.failCount * 1500);
+  }
+}
+
+/* ============================== 5. METER ============================== */
+/** Counts bytes and computes smoothed speeds. Upload speed counts only bytes that actually left
+ *  the send buffer (sent minus still-queued), so it shows the real network rate. */
+class Meter extends Emitter {
+  constructor() {
+    super();
+    this.totalUp = 0; this.totalDown = 0; this.speedUp = 0; this.speedDown = 0;
+    this.pending = () => 0;
+    this._lu = 0; this._ld = 0; this._t = performance.now();
+    setInterval(() => this._tick(), 500);
+  }
+  addUp(n) { this.totalUp += n; }
+  addDown(n) { this.totalDown += n; }
+  get onWire() { return Math.max(0, this.totalUp - this.pending()); }
+  _tick() {
+    const now = performance.now(), dt = (now - this._t) / 1000; this._t = now;
+    const up = this.onWire;
+    const su = Math.max(0, (up - this._lu) / dt), sd = Math.max(0, (this.totalDown - this._ld) / dt);
+    this._lu = up; this._ld = this.totalDown;
+    this.speedUp = this.speedUp * 0.4 + su * 0.6;
+    this.speedDown = this.speedDown * 0.4 + sd * 0.6;
+    if (this.speedUp < 1) this.speedUp = 0;
+    if (this.speedDown < 1) this.speedDown = 0;
+    this.emit('tick');
+  }
+}
+
+/* ============================== 6. SINKS ============================== */
+class FsAccessSink {
+  static supported() { return 'showSaveFilePicker' in window; }
+  async open(name) {
+    const handle = await window.showSaveFilePicker({ suggestedName: name });
+    this.w = await handle.createWritable();
+  }
+  write(buf) { return this.w.write(buf); }
+  async close() { await this.w.close(); return null; }
+  async abort() { try { await this.w.abort(); } catch (e) { /* ignore */ } }
+}
+class DirectorySink {
+  static supported() { return typeof window.showDirectoryPicker === 'function'; }
+  constructor(dir) { this.dir = dir; this.name = ''; this.w = null; }
+  async open(name) {
+    const dot = name.lastIndexOf('.');
+    const base = dot > 0 ? name.slice(0, dot) : name;
+    const ext = dot > 0 ? name.slice(dot) : '';
+    for (let n = 1; ; n++) {
+      const candidate = n === 1 ? name : `${base} (${n})${ext}`;
+      try { await this.dir.getFileHandle(candidate); }
+      catch (e) {
+        if (e.name === 'NotFoundError') { this.name = candidate; break; }
+        if (e.name !== 'TypeMismatchError') throw e;
+      }
+    }
+    const handle = await this.dir.getFileHandle(this.name, { create: true });
+    this.w = await handle.createWritable();
+  }
+  write(buf) { return this.w.write(buf); }
+  async close() { await this.w.close(); return null; }
+  async abort() {
+    if (this.w) { try { await this.w.abort(); } catch (e) { /* ignore */ } }
+    if (this.name) { try { await this.dir.removeEntry(this.name); } catch (e) { /* ignore */ } }
+  }
+}
+class OpfsSink {
+  static supported() {
+    return !!(navigator.storage && navigator.storage.getDirectory &&
+      window.FileSystemFileHandle && FileSystemFileHandle.prototype.createWritable);
+  }
+  static async purge() {
+    try {
+      const root = await navigator.storage.getDirectory();
+      for await (const [name] of root.entries()) if (name.startsWith('qsp-')) await root.removeEntry(name).catch(() => {});
+    } catch (e) { /* ignore */ }
+  }
+  async open(name) {
+    this.root = await navigator.storage.getDirectory();
+    this.fname = 'qsp-' + Date.now() + '-' + uid(4);
+    this.h = await this.root.getFileHandle(this.fname, { create: true });
+    this.w = await this.h.createWritable();
+  }
+  write(buf) { return this.w.write(buf); }
+  async close() { await this.w.close(); return await this.h.getFile(); }
+  async abort() {
+    try { await this.w.abort(); } catch (e) { /* ignore */ }
+    try { await this.root.removeEntry(this.fname); } catch (e) { /* ignore */ }
+  }
+}
+class MemorySink {
+  constructor() { this.chunks = []; }
+  async open() {}
+  async write(buf) { this.chunks.push(buf); }
+  async close() { return new Blob(this.chunks); }
+  async abort() { this.chunks = []; }
+}
+function createSink() {
+  if (FsAccessSink.supported()) return new FsAccessSink();
+  if (OpfsSink.supported()) return new OpfsSink();
+  return new MemorySink();
+}
+
+/* ============================= 7. TEXT SYNC (CHAT) ============================= */
+class TextSync {
+  constructor({ link, relay, selfId, els }) {
+    this.link = link; this.relay = relay; this.selfId = selfId; this.els = els;
+    this.msgs = [];
+    this.seen = new Set();
+    this.pending = new Map();
+    this.maxHistory = 300;
+    this.lastTypingSent = 0; this.idleTimer = null; this.peerTypingTimer = null;
+    this.touch = window.matchMedia('(pointer: coarse)').matches;
+    document.addEventListener('qsp:languagechange', () => {
+      this._updateCount(); this._badge();
+      for (const msg of this.msgs) {
+        const copy = msg.el && msg.el.querySelector('.cp');
+        if (copy) copy.textContent = tr('copy');
+      }
+    });
+
+    els.send.addEventListener('click', () => this.send());
+    els.input.addEventListener('input', () => this._onInput());
+    els.input.addEventListener('keydown', e => {
+      if (e.key === 'Enter' && !e.shiftKey && !e.isComposing && !this.touch) { e.preventDefault(); this.send(); }
+    });
+    els.clear.addEventListener('click', () => this.clear());
+    els.log.addEventListener('scroll', () => { if (this._nearBottom()) els.jump.hidden = true; });
+    els.jump.addEventListener('click', () => this._scrollBottom());
+
+    link.on('text-message', d => this._onChannel(d));
+    link.on('open', () => this._badge());
+    link.on('close', () => { this._setPeerTyping(false); this._badge(); });
+    relay.on('message', m => this._onRelay(m));
+
+    this._renderEmpty(); this._updateCount(); this._badge();
+  }
+  reset() {
+    this.seen.clear(); this.pending.clear(); this._wipe();
+    this.els.input.value = ''; this._autosize(); this._updateCount();
+  }
+
+  send() {
+    const text = this.els.input.value.replace(/\s+$/, '');
+    if (!text.trim()) return;
+    const msg = { id: uid(10), from: this.selfId, v: truncateToBytes(text, CONFIG.maxTextBytes), ts: Date.now() };
+    this._add(msg);
+    this.els.input.value = ''; this._autosize(); this._updateCount();
+    this._sendTyping(false);
+    if (this.link.isOpen) this.link.sendText({ t: 'chat', id: msg.id, from: msg.from, v: msg.v, ts: msg.ts });
+    else this._relaySend(msg).catch(() => toast(tr('messageNotDelivered')));
+    this.els.input.focus();
+  }
+  clear() {
+    const id = uid(8);
+    this.seen.add(id); this._wipe();
+    if (this.link.isOpen) this.link.sendText({ t: 'clear', id, from: this.selfId });
+    else this.relay.publish({ k: 'chatclear', id, from: this.selfId }).catch(() => {});
+    this.els.input.focus();
+  }
+  async _relaySend(msg) {
+    const parts = splitByBytes(msg.v, CONFIG.relayChunkBytes);
+    for (let i = 0; i < parts.length; i++) {
+      await this.relay.publish({ k: 'chat', id: msg.id, from: msg.from, ts: msg.ts, i, n: parts.length, d: parts[i] });
+    }
+  }
+
+  _onInput() {
+    const a = this.els.input, t = truncateToBytes(a.value, CONFIG.maxTextBytes);
+    if (t !== a.value) { a.value = t; toast(tr('messageLimitReached', { max: formatDigits(CONFIG.maxTextBytes) })); }
+    this._autosize(); this._updateCount();
+    clearTimeout(this.idleTimer);
+    if (!a.value) { this._sendTyping(false); return; }
+    if (Date.now() - this.lastTypingSent > 2000) this._sendTyping(true);
+    this.idleTimer = setTimeout(() => this._sendTyping(false), 2500);
+  }
+  _sendTyping(on) {
+    this.lastTypingSent = on ? Date.now() : 0;
+    if (!on) clearTimeout(this.idleTimer);
+    this.link.sendText({ t: 'typing', on, from: this.selfId });
+  }
+  _setPeerTyping(on) {
+    clearTimeout(this.peerTypingTimer);
+    this.els.typing.classList.toggle('show', on);
+    if (on) this.peerTypingTimer = setTimeout(() => this.els.typing.classList.remove('show'), 4000);
+  }
+
+  _onChannel(d) {
+    let m; try { m = JSON.parse(d); } catch (e) { return; }
+    if (m.t === 'chat') { this._setPeerTyping(false); this._add({ id: m.id, from: m.from, v: truncateToBytes(String(m.v || ''), CONFIG.maxTextBytes), ts: m.ts }); }
+    else if (m.t === 'typing') this._setPeerTyping(!!m.on);
+    else if (m.t === 'clear') this._onClear(m.id);
+  }
+  _onRelay(m) {
+    if (m.from === this.selfId) return;
+    if (m.k === 'chatclear') { this._onClear(m.id); return; }
+    if (m.k !== 'chat') return;
+    const e = this.pending.get(m.id) || { n: m.n, parts: [], got: 0 };
+    if (e.parts[m.i] === undefined) { e.parts[m.i] = m.d; e.got++; }
+    this.pending.set(m.id, e);
+    if (e.got === e.n) {
+      this.pending.delete(m.id);
+      this._add({ id: m.id, from: m.from, v: truncateToBytes(e.parts.join(''), CONFIG.maxTextBytes), ts: m.ts });
+    }
+  }
+  _onClear(id) {
+    if (this.seen.has(id)) return;
+    this.seen.add(id); this._wipe();
+    toast(tr('chatClearedByPeer'));
+  }
+
+  _add(msg) {
+    if (this.seen.has(msg.id)) return;
+    this.seen.add(msg.id);
+    const mine = msg.from === this.selfId;
+    const stick = mine || this._nearBottom();
+    const log = this.els.log;
+    const empty = log.querySelector('.chat-empty'); if (empty) empty.remove();
+
+    const el = document.createElement('div'); el.className = 'bubble ' + (mine ? 'me' : 'peer');
+    const body = document.createElement('div'); body.className = 'body'; body.dir = 'auto'; body.textContent = msg.v;
+    const foot = document.createElement('div'); foot.className = 'foot';
+    const time = document.createElement('span');
+    const locale = currentLanguage === 'fa' ? 'fa-IR' : 'en-US';
+    time.textContent = new Date(msg.ts || Date.now()).toLocaleTimeString(locale, { hour: '2-digit', minute: '2-digit' });
+    const cp = document.createElement('button'); cp.className = 'cp'; cp.dataset.i18n = 'copy'; cp.textContent = tr('copy');
+    cp.addEventListener('click', () => copyText(msg.v));
+    foot.append(cp, time); el.append(body, foot);
+    log.appendChild(el);
+    msg.el = el; this.msgs.push(msg);
+
+    if (this.msgs.length > this.maxHistory) { const old = this.msgs.shift(); if (old.el) old.el.remove(); }
+    if (stick) this._scrollBottom(); else this.els.jump.hidden = false;
+  }
+  _wipe() {
+    this.msgs = []; this.els.log.innerHTML = ''; this.els.jump.hidden = true;
+    this._setPeerTyping(false); this._renderEmpty();
+  }
+  _renderEmpty() {
+    if (this.els.log.querySelector('.bubble') || this.els.log.querySelector('.chat-empty')) return;
+    const d = document.createElement('div'); d.className = 'chat-empty';
+    d.dataset.i18n = 'chatEmpty'; d.textContent = tr('chatEmpty'); this.els.log.appendChild(d);
+  }
+  _nearBottom() { const l = this.els.log; return l.scrollHeight - l.scrollTop - l.clientHeight < 80; }
+  _scrollBottom() {
+    const l = this.els.log;
+    requestAnimationFrame(() => l.scrollTo({ top: l.scrollHeight, behavior: 'smooth' }));
+    this.els.jump.hidden = true;
+  }
+  _autosize() { const a = this.els.input; a.style.height = 'auto'; a.style.height = Math.min(a.scrollHeight, 140) + 'px'; }
+  _updateCount() {
+    const n = byteLen(this.els.input.value);
+    this.els.count.textContent = tr('byteCounter', {
+      current: formatDigits(n), max: formatDigits(CONFIG.maxTextBytes)
+    });
+    this.els.count.classList.toggle('bad', n >= CONFIG.maxTextBytes);
+  }
+  _badge() {
+    const on = this.link.isOpen, b = this.els.badge;
+    b.textContent = on ? tr('liveP2P') : tr('waitingPeerRelay');
+    b.classList.toggle('live', on);
+  }
+}
+
+/* =========================== 8. FILE TRANSFER =========================== */
+/**
+ * Chunked P2P file transfer over the "file" data channel.
+ * Speed notes:
+ *  - no per-byte checksum in JS (SCTP/DTLS already guarantee integrity) — this was a big CPU cost
+ *  - sender prefetches the next disk block while the current one is being sent
+ *  - receiver merges small chunks into ~2 MB blocks before writing to disk
+ *  - large send buffer + large ack window keep the pipe full on fast links
+ *
+ * Wire protocol (JSON strings; raw ArrayBuffers are file data):
+ *   offer{id,name,size,mime,batchId,batchIndex,batchCount,batchTotalBytes}  accept{id,offset}  reject{id}
+ *   ack{id,n}  state{id,paused}  end{id}  done{id}  cancel{id}  resume-req{id,offset,paused}
+ */
+class FileTransfer extends Emitter {
+  constructor(link, meter) {
+    super();
+    this.link = link; this.meter = meter;
+    this.items = new Map(); this.activeIn = null;
+    this.autoAcceptBatch = null;
+    this.wl = null; this.wlBusy = false;
+    this.on('update', () => this._syncWake());
+    document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') this._syncWake(); });
+    link.on('open', () => this._onOpen());
+    link.on('close', () => this._onClose());
+    link.on('file-message', d => this._onMessage(d));
+  }
+
+  addFiles(fileList) {
+    if (!this.link.isOpen) { toast(tr('connectPeerFirst')); return; }
+    const files = [...fileList];
+    const batchId = files.length > 1 ? uid(10) : '';
+    const batchTotalBytes = files.reduce((total, f) => total + f.size, 0);
+    files.forEach((f, batchIndex) => {
+      const it = { id: uid(10), dir: 'out', name: f.name, size: f.size, mime: f.type, state: 'queued',
+        file: f, offset: 0, acked: 0, paused: false, runId: 0, wake: null,
+        batchId, batchIndex, batchCount: files.length, batchTotalBytes };
+      this.items.set(it.id, it); this.emit('update', it);
+    });
+    this._pump();
+  }
+  async accept(id) {
+    const it = this.items.get(id);
+    if (!it || it.dir !== 'in' || it.state !== 'offered') return;
+    const sink = createSink();
+    if (sink instanceof MemorySink && it.size > CONFIG.memoryWarnBytes &&
+        !confirm(tr('largeFileConfirm'))) return;
+    await this._acceptWithSink(it, sink);
+  }
+  async acceptBatch(id) {
+    const it = this.items.get(id);
+    if (!it || it.dir !== 'in' || it.state !== 'offered' || !DirectorySink.supported() ||
+        !it.batchId || it.batchIndex !== 0 || it.batchCount < 2 || it.batchCount > MAX_AUTO_ACCEPT_FILES) return;
+    let dir;
+    try { dir = await window.showDirectoryPicker({ mode: 'readwrite' }); }
+    catch (e) { if (e.name !== 'AbortError') toast(tr('cannotChooseFolder', { error: e.message || e.name })); return; }
+    if (!this.link.isOpen || it.state !== 'offered') return;
+    const batch = { id: it.batchId, dir, count: it.batchCount, nextIndex: 0 };
+    this.autoAcceptBatch = batch;
+    try {
+      if (!await this._acceptBatchFile(it, batch) && this.autoAcceptBatch === batch) this.autoAcceptBatch = null;
+    } catch (e) {
+      if (this.autoAcceptBatch === batch) this.autoAcceptBatch = null;
+      console.error(e); toast(tr('cannotAcceptBatch', { error: e.message || e.name }));
+    }
+  }
+  async _acceptBatchFile(it, batch) {
+    if (this.autoAcceptBatch !== batch || it.batchId !== batch.id ||
+        it.batchCount !== batch.count || it.batchIndex !== batch.nextIndex) return false;
+    const accepted = await this._acceptWithSink(it, new DirectorySink(batch.dir));
+    if (!accepted) {
+      if (this.autoAcceptBatch === batch) this.autoAcceptBatch = null;
+      return false;
+    }
+    batch.nextIndex++;
+    if (batch.nextIndex >= batch.count) this.autoAcceptBatch = null;
+    return true;
+  }
+  async _acceptWithSink(it, sink) {
+    if (it.state !== 'offered' || (this.activeIn && this.activeIn !== it)) return false;
+    try { await sink.open(it.name, it.size); }
+    catch (e) {
+      await sink.abort();
+      if (e.name !== 'AbortError') toast(tr('cannotSaveFile', { error: e.message || e.name }));
+      return false;
+    }
+    it.sink = sink; it.state = 'receiving';
+    it.received = 0; it.written = 0; it.lastAck = 0; it.chain = Promise.resolve(); it.dead = false;
+    it.batch = []; it.batchBytes = 0;
+    this.activeIn = it;
+    this._ctrl({ t: 'accept', id: it.id, offset: 0 });
+    this.emit('update', it);
+    return true;
+  }
+  decline(id) {
+    const it = this.items.get(id); if (!it || it.state !== 'offered') return;
+    this._ctrl({ t: 'reject', id }); it.state = 'declined'; this.emit('update', it);
+  }
+  setPaused(id, paused) {
+    const it = this.items.get(id);
+    if (!it || !['sending', 'receiving'].includes(it.state)) return;
+    it.paused = paused; this._ctrl({ t: 'state', id, paused }); this._wake(it); this.emit('update', it);
+  }
+  cancel(id) {
+    const it = this.items.get(id); if (!it) return;
+    this._ctrl({ t: 'cancel', id }); this._kill(it, 'cancelled'); this._pump();
+  }
+  save(id) {
+    const it = this.items.get(id); if (!it || !it.result) return;
+    const url = URL.createObjectURL(it.result);
+    const a = document.createElement('a'); a.href = url; a.download = it.name;
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 5 * 60 * 1000);
+  }
+  progressBytes(it) {
+    if (it.state === 'done') return it.size;
+    if (it.dir === 'in') return it.received || 0;
+    const buffered = this.link.file ? this.link.file.bufferedAmount : 0;
+    return Math.max(it.acked, it.offset - buffered);
+  }
+  reset() {
+    this.autoAcceptBatch = null;
+    for (const it of this.items.values()) {
+      if (['sending', 'receiving', 'offered', 'finishing'].includes(it.state)) this._ctrl({ t: 'cancel', id: it.id });
+      this._kill(it, 'cancelled', true);
+    }
+    this.items.clear(); this.activeIn = null; this.emit('reset');
+  }
+
+  _ctrl(obj) { try { this.link.sendFileCtrl(obj); } catch (e) { /* channel closing */ } }
+  _wake(it) { const w = it.wake; it.wake = null; if (w) w(); }
+  _touch(it) {
+    const now = performance.now();
+    if (now - (it._ui || 0) < 150) return;
+    it._ui = now; this.emit('update', it);
+  }
+  _kill(it, state, quiet = false) {
+    if (this.autoAcceptBatch && it.dir === 'in' && it.batchId === this.autoAcceptBatch.id) this.autoAcceptBatch = null;
+    it.state = state; it.dead = true; it.runId++;
+    it.batch = []; it.batchBytes = 0;
+    if (it.sink) { it.sink.abort(); it.sink = null; }
+    if (this.activeIn === it) this.activeIn = null;
+    this._wake(it); if (!quiet) this.emit('update', it);
+  }
+  _fail(it, msg) {
+    if (it.dead) return;
+    this._ctrl({ t: 'cancel', id: it.id });
+    it.error = msg; this._kill(it, 'error'); this._pump();
+  }
+  _pump() {
+    if (!this.link.isOpen) return;
+    const all = [...this.items.values()].filter(i => i.dir === 'out');
+    if (all.some(i => ['offered', 'sending', 'finishing', 'interrupted'].includes(i.state))) return;
+    const next = all.find(i => i.state === 'queued'); if (!next) return;
+    next.state = 'offered';
+    this._ctrl({ t: 'offer', id: next.id, name: next.name, size: next.size, mime: next.mime,
+      batchId: next.batchId, batchIndex: next.batchIndex, batchCount: next.batchCount, batchTotalBytes: next.batchTotalBytes });
+    this.emit('update', next);
+  }
+
+  _onOpen() {
+    for (const it of this.items.values()) {
+      if (it.dir === 'in' && it.state === 'interrupted') {
+        (async () => {
+          await it.chain;
+          if (it.dead) return;
+          it.state = 'receiving'; it.lastAck = it.written; this.activeIn = it;
+          this._ctrl({ t: 'resume-req', id: it.id, offset: it.received, paused: it.paused });
+          this.emit('update', it);
+        })();
+      } else if (it.dir === 'out' && it.state === 'interrupted' && it.offset >= it.size) {
+        this._ctrl({ t: 'end', id: it.id });
+      }
+    }
+    this._pump();
+  }
+  _onClose() {
+    this.autoAcceptBatch = null;
+    for (const it of [...this.items.values()]) {
+      if (it.dir === 'out') {
+        if (['sending', 'finishing'].includes(it.state)) { it.state = 'interrupted'; it.runId++; this._wake(it); }
+        else if (it.state === 'offered') it.state = 'queued';
+      } else {
+        if (it.state === 'receiving') it.state = 'interrupted';
+        else if (it.state === 'offered') it.state = 'cancelled';
+      }
+      this.emit('update', it);
+    }
+    this.activeIn = null;
+  }
+
+  _onMessage(data) {
+    if (typeof data !== 'string') return this._onChunk(data);
+    let m; try { m = JSON.parse(data); } catch (e) { return; }
+    const it = this.items.get(m.id);
+    switch (m.t) {
+      case 'offer': return this._onOffer(m);
+      case 'accept': if (it && it.dir === 'out' && it.state === 'offered') { it.state = 'sending'; it.offset = it.acked = m.offset || 0; this.emit('update', it); this._run(it); } break;
+      case 'reject': if (it) { it.state = 'rejected'; this.emit('update', it); this._pump(); } break;
+      case 'ack': if (it) { it.acked = Math.max(it.acked, m.n); this._wake(it); this._touch(it); } break;
+      case 'state': if (it) { it.paused = !!m.paused; this._wake(it); this.emit('update', it); } break;
+      case 'end': return this._onEnd(it);
+      case 'done': if (it && it.dir === 'out') { it.state = 'done'; it.acked = it.size; this.emit('update', it); this._pump(); } break;
+      case 'cancel': if (it && !it.dead) { this._kill(it, 'cancelled'); this._pump(); } break;
+      case 'resume-req':
+        if (it && it.dir === 'out' && ['interrupted', 'sending', 'finishing'].includes(it.state)) {
+          it.offset = it.acked = m.offset; it.paused = !!m.paused; it.state = 'sending';
+          this.emit('update', it); this._run(it);
+        }
+        break;
+    }
+  }
+
+  /* ---- receiving ---- */
+  _onOffer(m) {
+    // The offer comes from the peer, so check every field before it reaches the UI or a file sink.
+    const idOk = typeof m.id === 'string' && /^[a-z0-9]{10}$/.test(m.id);
+    if (!idOk) return;
+    if (typeof m.name !== 'string' || !m.name || m.name.length > 255 ||
+        !Number.isSafeInteger(m.size) || m.size < 0) {
+      this._ctrl({ t: 'reject', id: m.id });
+      return;
+    }
+    m.mime = typeof m.mime === 'string' ? m.mime.slice(0, 127) : '';
+    const batchCount = m.batchCount, batchIndex = m.batchIndex;
+    const validBatch = typeof m.batchId === 'string' && /^[a-z0-9]{10}$/.test(m.batchId) &&
+      Number.isSafeInteger(batchCount) && batchCount > 1 && batchCount <= MAX_AUTO_ACCEPT_FILES &&
+      Number.isSafeInteger(batchIndex) && batchIndex >= 0 && batchIndex < batchCount;
+    const it = { id: m.id, dir: 'in', name: m.name, size: m.size, mime: m.mime, state: 'offered',
+      batchId: validBatch ? m.batchId : '', batchIndex: validBatch ? batchIndex : 0,
+      batchCount: validBatch ? batchCount : 1,
+      batchTotalBytes: validBatch && Number.isSafeInteger(m.batchTotalBytes) && m.batchTotalBytes >= 0 ? m.batchTotalBytes : m.size,
+      received: 0, written: 0, lastAck: 0, paused: false, dead: false, batch: [], batchBytes: 0 };
+    this.items.set(it.id, it); this.emit('update', it);
+    const batch = this.autoAcceptBatch;
+    if (batch) {
+      if (it.batchId === batch.id && it.batchCount === batch.count && it.batchIndex === batch.nextIndex) {
+        this._acceptBatchFile(it, batch).catch(e => {
+          if (this.autoAcceptBatch === batch) this.autoAcceptBatch = null;
+          console.error(e); toast(tr('couldNotAcceptFile', { error: e.message || e.name }));
+        });
+        return;
+      }
+      this.autoAcceptBatch = null;
+    }
+    toast(tr('incomingFileToast', { name: m.name }));
+  }
+  _onChunk(buf) {
+    const it = this.activeIn;
+    if (!it || it.state !== 'receiving') return;
+    const n = buf.byteLength;
+    it.received += n; this.meter.addDown(n);
+    if (it.received > it.size) { this._fail(it, 'Received more data than expected'); return; }
+    it.batch.push(buf); it.batchBytes += n;
+    if (it.batchBytes >= CONFIG.writeBatch || it.received >= it.size) this._flush(it);
+    else this._touch(it);
+  }
+  /** Write the collected chunks as one block; writes are chained so they hit the disk in order. */
+  _flush(it) {
+    if (it.dead || !it.batch.length) return;
+    const parts = it.batch, bytes = it.batchBytes;
+    it.batch = []; it.batchBytes = 0;
+    const data = parts.length === 1 ? parts[0] : new Blob(parts);
+    it.chain = it.chain.then(async () => {
+      if (it.dead) return;
+      await it.sink.write(data);
+      it.written += bytes;
+      if (it.written - it.lastAck >= CONFIG.ackEvery) { it.lastAck = it.written; this._ctrl({ t: 'ack', id: it.id, n: it.written }); }
+      this._touch(it);
+    }).catch(err => this._fail(it, err.message || 'Write failed'));
+  }
+  async _onEnd(it) {
+    if (!it || it.dir !== 'in') return;
+    if (it.state === 'done') { this._ctrl({ t: 'done', id: it.id }); return; }
+    this._flush(it);
+    await it.chain;
+    if (it.dead) return;
+    if (it.written !== it.size) { this._fail(it, 'Size mismatch'); return; }
+    try { it.result = await it.sink.close(); it.sink = null; }
+    catch (e) { this._fail(it, e.message || 'Could not finalize file'); return; }
+    it.state = 'done'; this.activeIn = null;
+    this._ctrl({ t: 'done', id: it.id });
+    this.emit('update', it);
+    toast(tr('receivedFileToast', { name: it.name }));
+  }
+
+  /* ---- sending ---- */
+  async _gate(it, alive) {
+    while (alive() && (it.paused || it.offset - it.acked > CONFIG.window)) {
+      await new Promise(r => { it.wake = r; });
+    }
+  }
+  _drain() {
+    const ch = this.link.file;
+    if (!ch || ch.bufferedAmount <= CONFIG.bufferHigh) return Promise.resolve();
+    ch.bufferedAmountLowThreshold = CONFIG.bufferLow;
+    return new Promise(res => {
+      const done = () => { ch.removeEventListener('bufferedamountlow', done); ch.removeEventListener('close', done); res(); };
+      ch.addEventListener('bufferedamountlow', done); ch.addEventListener('close', done);
+    });
+  }
+  _syncWake() {
+    if (!('wakeLock' in navigator)) return;
+    const active = [...this.items.values()].some(i => ['sending', 'receiving', 'finishing'].includes(i.state));
+    if (active && !this.wl && !this.wlBusy && document.visibilityState === 'visible') {
+      this.wlBusy = true;
+      navigator.wakeLock.request('screen').then(l => {
+        this.wl = l; l.addEventListener('release', () => { if (this.wl === l) this.wl = null; });
+      }).catch(() => {}).finally(() => { this.wlBusy = false; });
+    } else if (!active && this.wl) {
+      const l = this.wl; this.wl = null; l.release().catch(() => {});
+    }
+  }
+  async _run(it) {
+    const run = ++it.runId;
+    const alive = () => it.runId === run && it.state === 'sending' && this.link.isOpen;
+    const max = this.link.maxMessageSize;
+    const chunk = (max && isFinite(max)) ? Math.min(CONFIG.chunkSize, max) : CONFIG.chunkSize;
+    const readBlock = start => {                                   // read one block from disk
+      const p = it.file.slice(start, Math.min(start + CONFIG.readBlock, it.size)).arrayBuffer();
+      p.catch(() => {});
+      return p;
+    };
+    try {
+      let blockStart = it.offset;
+      let next = blockStart < it.size ? readBlock(blockStart) : null;
+      while (alive() && next) {
+        const buf = await next;
+        const nextStart = blockStart + buf.byteLength;
+        next = nextStart < it.size ? readBlock(nextStart) : null;  // prefetch the next block while this one is sent
+        let pos = 0;
+        while (pos < buf.byteLength) {
+          if (it.paused || it.offset - it.acked > CONFIG.window) { await this._gate(it, alive); }
+          if (!alive()) return;
+          const ch = this.link.file;
+          if (ch.bufferedAmount > CONFIG.bufferHigh) { await this._drain(); }
+          if (!alive()) return;
+          const n = Math.min(chunk, buf.byteLength - pos);
+          this.link.file.send(new Uint8Array(buf, pos, n));
+          pos += n; it.offset += n; this.meter.addUp(n); this._touch(it);
+        }
+        blockStart = nextStart;
+      }
+      if (alive()) {
+        it.state = 'finishing';
+        this._ctrl({ t: 'end', id: it.id });
+        this.emit('update', it);
+      }
+    } catch (e) {
+      if (this.link.isOpen && !it.dead) this._fail(it, e.message || 'Send failed');
+    }
+  }
+}
+
+/* ============================== 9. UI MODULES ============================== */
+class TransferUI {
+  constructor(root, ft) {
+    this.root = root; this.ft = ft; this.cards = new Map();
+    ft.on('update', it => this.render(it));
+    ft.on('reset', () => { root.innerHTML = ''; this.cards.clear(); });
+    document.addEventListener('qsp:languagechange', () => {
+      for (const it of this.ft.items.values()) {
+        const card = this.cards.get(it.id);
+        if (card) card.key = '';
+        this.render(it);
+      }
+    });
+    root.addEventListener('click', e => {
+      const b = e.target.closest('button[data-act]'); if (!b) return;
+      const id = b.dataset.id, it = ft.items.get(id);
+      switch (b.dataset.act) {
+        case 'accept': ft.accept(id); break;
+        case 'accept-batch': ft.acceptBatch(id); break;
+        case 'decline': ft.decline(id); break;
+        case 'pause': ft.setPaused(id, true); break;
+        case 'resume': ft.setPaused(id, false); break;
+        case 'cancel': ft.cancel(id); break;
+        case 'save': ft.save(id); break;
+        case 'remove': { const c = this.cards.get(id); if (c) c.el.remove(); this.cards.delete(id); if (it) ft.items.delete(id); break; }
+      }
+    });
+  }
+  _create() {
+    const el = document.createElement('div'); el.className = 'item';
+    el.innerHTML = '<div class="name"></div><div class="meta"></div><div class="prog"><i></i></div><div class="acts"></div>';
+    this.root.prepend(el);
+    const name = el.querySelector('.name'); name.dir = 'auto';
+    return { el, name, meta: el.querySelector('.meta'),
+      prog: el.querySelector('.prog'), bar: el.querySelector('.prog i'), acts: el.querySelector('.acts'), key: '' };
+  }
+  render(it) {
+    let c = this.cards.get(it.id);
+    if (!c) { c = this._create(); this.cards.set(it.id, c); }
+    const bytes = this.ft.progressBytes(it);
+    const pct = it.size ? Math.min(100, bytes / it.size * 100) : 100;
+    const arrow = it.dir === 'out' ? '↑' : '↓';
+    const label = {
+      queued: tr('queued'), finishing: tr('finishing'), interrupted: tr('connectionLost'),
+      offered: it.dir === 'out' ? tr('waitingAccept') : it.batchCount > 1
+        ? tr('incomingBatchFile', {
+          index: formatDigits(it.batchIndex + 1), count: formatDigits(it.batchCount), total: fmtBytes(it.batchTotalBytes)
+        })
+        : tr('incomingFile'),
+      sending: it.paused ? tr('paused') : tr('sending'),
+      receiving: it.paused ? tr('paused') : tr('receiving'),
+      done: it.dir === 'in' ? (it.result ? tr('receivedReady') : tr('receivedSaved')) : tr('sentDone'),
+      rejected: tr('declinedByPeer'), declined: tr('declined'), cancelled: tr('cancelled'),
+      error: tr('failed', { error: it.error || tr('unknownError') })
+    }[it.state] || it.state;
+    c.name.textContent = `${arrow} ${it.name}`;
+    c.meta.textContent = tr('fileProgress', {
+      label, done: fmtBytes(bytes), total: fmtBytes(it.size),
+      percent: formatDigits(pct.toFixed(pct < 10 ? 1 : 0))
+    });
+    c.bar.style.width = pct + '%';
+    c.prog.className = 'prog' + (it.state === 'done' ? ' done' : ['error', 'cancelled', 'rejected', 'declined'].includes(it.state) ? ' bad' : it.paused ? ' pause' : '');
+
+    const key = [it.state, it.paused, !!it.result].join(':');
+    if (key === c.key) return;
+    c.key = key;
+    const btn = (act, key, cls = '') => `<button class="btn ${cls}" data-act="${act}" data-id="${it.id}">${tr(key)}</button>`;
+    let html = '';
+    if (it.state === 'offered' && it.dir === 'in') {
+      const canAcceptBatch = it.batchId && it.batchIndex === 0 && it.batchCount > 1 &&
+        it.batchCount <= MAX_AUTO_ACCEPT_FILES && DirectorySink.supported();
+      html = canAcceptBatch
+        ? btn('accept-batch', 'acceptAllToFolder', 'primary') +
+          btn('accept', 'thisFileOnly') + btn('decline', 'decline')
+        : btn('accept', 'acceptSave', 'primary') + btn('decline', 'decline');
+    }
+    else if (['sending', 'receiving'].includes(it.state)) html = btn(it.paused ? 'resume' : 'pause', it.paused ? 'resume' : 'pause') + btn('cancel', 'cancel', 'danger');
+    else if (['queued', 'offered', 'interrupted', 'finishing'].includes(it.state)) html = btn('cancel', 'cancel', 'danger');
+    else {
+      if (it.state === 'done' && it.dir === 'in' && it.result) html += btn('save', 'saveFile', 'primary');
+      html += btn('remove', 'dismiss');
+    }
+    c.acts.innerHTML = html;
+  }
+}
+
+/** Speed / route statistics inside the Files card. */
+class StatsBar {
+  constructor({ meter, link }) {
+    this.meter = meter; this.routeKey = 'routeUnknown'; this.relayed = false;
+    link.on('route', t => {
+      this.relayed = t === 'relay';
+      this.routeKey = { host: 'routeSameNetwork', srflx: 'routeInternet', prflx: 'routeInternet',
+        relay: 'routeRelay' }[t] || 'routeUnknown';
+      this.render();
+    });
+    link.on('close', () => { this.routeKey = 'routeUnknown'; this.relayed = false; this.render(); });
+    meter.on('tick', () => this.render());
+    document.addEventListener('qsp:languagechange', () => this.render());
+    this.render();
+  }
+  render() {
+    const m = this.meter;
+    $('#stUp').textContent = fmtSpeed(m.speedUp);
+    $('#stDown').textContent = fmtSpeed(m.speedDown);
+    $('#stSent').textContent = fmtBytes(m.onWire);
+    $('#stRecv').textContent = fmtBytes(m.totalDown);
+    const r = $('#stRoute'); r.textContent = tr(this.routeKey); r.className = this.relayed ? 'warn' : '';
+  }
+}
+
+class FeedbackUI {
+  constructor() {
+    this.form = $('#feedbackForm');
+    this.message = $('#feedbackMessage');
+    this.formStatus = $('#feedbackFormStatus');
+    this.adminForm = $('#feedbackAdminForm');
+    this.adminStatus = $('#feedbackAdminStatus');
+    this.adminDetails = $('#feedbackAdminDetails');
+    this.secretInput = $('#feedbackAdminSecret');
+    this.adminList = $('#feedbackAdminList');
+    this.lockButton = $('#feedbackLock');
+    this.adminSecret = '';
+    this.entries = null;
+    this.adminRequestId = 0;
+    this.formStatusKey = '';
+    this.adminStatusKey = '';
+    this.formStatusValues = {};
+    this.adminStatusValues = {};
+    this.formStatusClass = '';
+    this.adminStatusClass = '';
+
+    this.form.addEventListener('submit', e => this.submitFeedback(e));
+    this.message.addEventListener('input', () => this.updateCounter());
+    this.adminForm.addEventListener('submit', e => this.unlockAdmin(e));
+    this.lockButton.addEventListener('click', () => this.lockAdmin());
+    this.adminDetails.addEventListener('toggle', () => { if (!this.adminDetails.open) this.lockAdmin(); });
+    document.addEventListener('qsp:languagechange', () => this.refreshLanguage());
+    this.updateCounter();
+  }
+  updateCounter() {
+    $('#feedbackCounter').textContent = tr('feedbackCounter', {
+      current: formatDigits(this.message.value.length), max: formatDigits(2000)
+    });
+  }
+  setStatus(kind, key, className = '', values = {}) {
+    this[`${kind}StatusKey`] = key;
+    this[`${kind}StatusValues`] = values;
+    this[`${kind}StatusClass`] = className;
+    const element = kind === 'form' ? this.formStatus : this.adminStatus;
+    const displayValues = key === 'feedbackAdminLoaded' && values.count != null
+      ? { ...values, count: formatDigits(values.count) } : values;
+    element.textContent = key ? tr(key, displayValues) : '';
+    element.className = 'feedback-status' + (className ? ' ' + className : '');
+  }
+  refreshLanguage() {
+    this.updateCounter();
+    for (const kind of ['form', 'admin']) {
+      const key = this[`${kind}StatusKey`];
+      this.setStatus(kind, key, this[`${kind}StatusClass`], this[`${kind}StatusValues`]);
+    }
+    if (this.entries) this.renderEntries();
+  }
+  async request(path, options = {}) {
+    const response = await fetch(CONFIG.feedbackApiUrl + path, options);
+    const body = await response.json();
+    if (!response.ok) {
+      const error = new Error(body.error || 'feedback_request_failed');
+      error.status = response.status;
+      throw error;
+    }
+    return body;
+  }
+  errorKey(error, admin = false) {
+    if (error.message === 'spam_detected') return 'feedbackSpam';
+    if (error.status === 401 || error.status === 403) return 'feedbackAdminInvalid';
+    if (error.status === 400 || error.status === 413) return 'feedbackInvalid';
+    if (error.status === 429) return 'feedbackRateLimit';
+    if (error.status === 503) return admin ? 'feedbackAdminNotConfigured' : 'feedbackServiceOffline';
+    if (!error.status) return admin ? 'feedbackAdminLoadError' : 'feedbackNetworkError';
+    return admin ? 'feedbackAdminLoadError' : 'feedbackSendError';
+  }
+  async submitFeedback(event) {
+    event.preventDefault();
+    const message = this.message.value.trim();
+    if (message.length < 3 || message.length > 2000) {
+      this.setStatus('form', 'feedbackInvalid', 'error'); return;
+    }
+    const submit = $('#feedbackSubmit');
+    submit.disabled = true; this.setStatus('form', 'feedbackSending');
+    try {
+      await this.request('/api/feedback', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message, website: $('#feedbackWebsite').value })
+      });
+      this.form.reset(); this.updateCounter(); this.setStatus('form', 'feedbackThanks', 'success');
+    } catch (error) {
+      console.error('Feedback submission failed:', error);
+      this.setStatus('form', this.errorKey(error), 'error');
+    } finally { submit.disabled = false; }
+  }
+  async unlockAdmin(event) {
+    event.preventDefault();
+    const secret = this.secretInput.value;
+    if (!secret) { this.setStatus('admin', 'feedbackSecretRequired', 'error'); return; }
+    const requestId = ++this.adminRequestId;
+    this.secretInput.value = '';
+    this.adminSecret = secret;
+    this.lockButton.hidden = true;
+    try {
+      const data = await this.request('/api/feedback', {
+        headers: { 'X-Admin-Secret': this.adminSecret }
+      });
+      if (requestId !== this.adminRequestId) return;
+      if (!Array.isArray(data.feedback)) throw new Error('invalid_feedback_response');
+      this.entries = data.feedback;
+      this.lockButton.hidden = false;
+      this.setStatus('admin', this.entries.length
+        ? 'feedbackAdminLoaded' : 'feedbackAdminEmpty', '', { count: this.entries.length });
+      this.renderEntries();
+    } catch (error) {
+      if (requestId !== this.adminRequestId) return;
+      console.error('Could not load private feedback:', error);
+      this.adminSecret = '';
+      this.entries = null;
+      this.adminList.replaceChildren();
+      this.setStatus('admin', this.errorKey(error, true), 'error');
+    }
+  }
+  async deleteEntry(id) {
+    if (!this.adminSecret || !confirm(tr('feedbackDeleteConfirm'))) return;
+    const secret = this.adminSecret;
+    try {
+      await this.request('/api/feedback/' + encodeURIComponent(id), {
+        method: 'DELETE',
+        headers: { 'X-Admin-Secret': secret }
+      });
+      if (this.adminSecret !== secret || !this.entries) return;
+      this.entries = this.entries.filter(entry => entry.id !== id);
+      this.renderEntries();
+      this.setStatus('admin', 'feedbackDeleted', 'success');
+    } catch (error) {
+      if (this.adminSecret !== secret) return;
+      console.error('Could not delete feedback:', error);
+      this.setStatus('admin', error.status === 401 || error.status === 403
+        ? 'feedbackAdminInvalid' : 'feedbackDeleteError', 'error');
+    }
+  }
+  renderEntries() {
+    this.adminList.replaceChildren();
+    if (!this.entries || !this.entries.length) return;
+    const locale = currentLanguage === 'fa' ? 'fa-IR' : 'en-US';
+    for (const entry of this.entries) {
+      const card = document.createElement('article'); card.className = 'feedback-entry';
+      const head = document.createElement('div'); head.className = 'feedback-entry-head';
+      const date = document.createElement('span');
+      date.textContent = tr('feedbackEntryDate', { date: new Date(entry.created_at).toLocaleString(locale) });
+      const remove = document.createElement('button'); remove.className = 'btn danger';
+      remove.type = 'button'; remove.textContent = tr('feedbackDelete');
+      remove.addEventListener('click', () => this.deleteEntry(entry.id));
+      const message = document.createElement('p'); message.className = 'feedback-entry-message';
+      message.textContent = entry.message; message.dir = 'auto';
+      head.append(date, remove); card.append(head, message); this.adminList.appendChild(card);
+    }
+  }
+  lockAdmin() {
+    this.adminRequestId++;
+    this.adminSecret = ''; this.entries = null; this.secretInput.value = '';
+    this.adminList.replaceChildren(); this.lockButton.hidden = true;
+    this.setStatus('admin', '', '');
+  }
+}
+
+/** Room code, share link and join / new-room controls (bottom of the page). */
+class RoomManager extends Emitter {
+  constructor() {
+    super();
+    this.code = '';
+    window.addEventListener('hashchange', () => {
+      const c = this._fromHash(); if (c && c !== this.code) this.join(c);
+    });
+    $('#copyLinkBtn').addEventListener('click', () => copyText(this.link));
+    $('#copyCodeBtn').addEventListener('click', () => copyText(this.code));
+    $('#joinBtn').addEventListener('click', () => this._joinFromInput());
+    $('#joinInput').addEventListener('keydown', e => { if (e.key === 'Enter') this._joinFromInput(); });
+  }
+  static generate() {
+    const n = crypto.getRandomValues(new Uint32Array(1))[0] % 1000000;
+    return String(n).padStart(6, '0');
+  }
+  get link() { return location.origin + location.pathname + '#' + this.code; }
+  _fromHash() { const h = location.hash.replace('#', ''); return /^\d{6}$/.test(h) ? h : ''; }
+  _isReload() {
+    try {
+      const nav = performance.getEntriesByType('navigation')[0];
+      return !!nav && nav.type === 'reload';
+    } catch (e) { return false; }
+  }
+  _top() { window.scrollTo({ top: 0, behavior: 'smooth' }); }
+  start() {
+    const fromLink = this._isReload() ? '' : this._fromHash();
+    this.join(fromLink || RoomManager.generate());
+  }
+  join(code) {
+    this.code = code;
+    history.replaceState(null, '', '#' + code);
+    $('#roomCode').textContent = code; $('#linkField').value = this.link;
+    this.emit('change', code);
+  }
+  _joinFromInput() {
+    const v = normalizeDigits($('#joinInput').value.trim());
+    if (!/^\d{6}$/.test(v)) { toast(tr('enterSixDigitCode')); return; }
+    $('#joinInput').value = ''; this.join(v); toast(tr('joinedRoom', { code: v })); this._top();
+  }
+}
+
+/* ============================== 10. BOOTSTRAP ============================== */
+function main() {
+  const selfId = uid(10);
+  const relay = new Relay();
+  const link = new PeerLink(relay, selfId);
+  const meter = new Meter();
+  meter.pending = () => (link.file ? link.file.bufferedAmount : 0);
+
+  const text = new TextSync({
+    link, relay, selfId,
+    els: { log: $('#chatLog'), jump: $('#chatJump'), typing: $('#typing'), input: $('#chatInput'), count: $('#count'), send: $('#sendBtn'), clear: $('#clearBtn'), badge: $('#liveBadge') }
+  });
+  const files = new FileTransfer(link, meter);
+  new TransferUI($('#transfers'), files);
+  new StatsBar({ meter, link });
+  new FeedbackUI();
+  const rooms = new RoomManager();
+
+  const pill = $('#linkPill'), pillText = $('#linkPillText');
+  const updatePill = () => {
+    let cls = '', txt;
+    if (link.state === 'connected') { cls = 'on'; txt = tr('connectedP2P'); }
+    else if (link.state === 'negotiating') txt = tr('connectingPeer');
+    else if (!relay.online) { cls = 'off'; txt = tr('signalingOffline'); }
+    else txt = tr('waitingDevice');
+    pill.className = 'pill ' + cls; pillText.textContent = txt;
+  };
+  link.on('state', updatePill); relay.on('status', updatePill);
+  document.addEventListener('qsp:languagechange', updatePill);
+  let lastPubErr = 0;
+  relay.on('pub-error', msg => {
+    if (Date.now() - lastPubErr < 6000) return;
+    lastPubErr = Date.now();
+    toast(tr('signalingSendFailed', { error: msg }));
+    pillText.textContent = tr('sendBlocked', { error: msg }); pill.className = 'pill off';
+  });
+  link.on('fail', n => { if (n >= 2) toast(tr('directConnectionFail')); });
+  link.on('close', reason => { if (reason !== 'reset') toast(tr('peerDisconnected')); });
+  link.on('open', () => toast(tr('connectedToast')));
+
+  const input = $('#fileInput'), drop = $('#drop'), panel = $('#filePanel');
+  $('#pickBtn').addEventListener('click', () => input.click());
+  input.addEventListener('change', () => { files.addFiles([...input.files]); input.value = ''; });
+  ['dragenter', 'dragover'].forEach(ev => panel.addEventListener(ev, e => { e.preventDefault(); drop.classList.add('over'); }));
+  ['dragleave', 'drop'].forEach(ev => panel.addEventListener(ev, e => { e.preventDefault(); drop.classList.remove('over'); }));
+  panel.addEventListener('drop', e => { if (e.dataTransfer.files.length) files.addFiles([...e.dataTransfer.files]); });
+
+  rooms.on('change', code => {
+    files.reset(); text.reset(); link.reset();
+    relay.join(code);
+    updatePill();
+  });
+
+  window.addEventListener('pagehide', () => link.bye());
+  window.addEventListener('online', () => { if (!relay.online) relay.join(rooms.code); });
+  if (OpfsSink.supported()) OpfsSink.purge();
+
+  rooms.start();
+}
+setupPreferences();
+main();
+
+})();
+</script>
+</body>
+</html>
